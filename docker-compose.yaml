@@ -12,6 +12,7 @@ services:
       - NODE_ENV=production
       - FRONTEND_URL=https://own-password.campfire-on-the-wall.com
       - VITE_TEST_VARIABLE='Im a test variable'
+      - VITE_APP_NAME=
     volumes:
       # Password files data
       - /home/campfire/data/other/passwords:/app/data/passwords

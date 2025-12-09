@@ -14,6 +14,7 @@ services:
       - FRONTEND_URL=http://localhost:5180 # use local host if not yet exposed
       #- FRONTEND_URL=https://dev.campfire-on-the-wall.com # use actual domain when exposed
       - VITE_TEST_VARIABLE='Im a test variable'
+      - VITE_APP_NAME=
     volumes:
       # To develop and enable hot reload
       - ./frontend:/app/frontend
