@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
+import { motion } from 'motion/react';
 import { fetchPasswordFiles } from '../api/passwordApi';
 import type { PasswordFileInfo } from '../api/passwordApi';
 import { Button } from '@/components/animate-ui/components/buttons/button';
@@ -111,9 +112,12 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                         </div>
                     ) : (
                         <div className="space-y-3">
-                            {files.map((file) => (
-                                <div
+                            {files.map((file, index) => (
+                                <motion.div
                                     key={file.filename}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.2, delay: 0.3 + index * 0.1 }}
                                     onClick={() => onFileSelect(file.filename)}
                                     className="group bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 hover:border-neutral-700 rounded-xl p-5 cursor-pointer transition-all transform hover:scale-[1.02] hover:shadow-xl"
                                 >
@@ -146,7 +150,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                                             </svg>
                                         </div>
                                     </div>
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                     )}

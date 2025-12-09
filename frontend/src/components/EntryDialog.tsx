@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { PasswoodPassword, Tag } from '../cryptor';
 import { generatePassword, calculatePasswordStrength } from '../cryptor/utils';
-import { Button } from '@/components/animate-ui/components/buttons/button';
+import { Button } from './animate-ui/components/buttons/button';
 import TagPicker from './TagPicker';
 import CustomDialog from './CustomDialog';
 

@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import type { PasswoodPassword, Tag } from '../cryptor';
 import PasswordEntry from './PasswordEntry';
@@ -118,14 +119,20 @@ export default function PasswordList({
                         ref={scrollContainerRef}
                         className="space-y-3 overflow-y-auto pr-2 h-full"
                     >
-                        {passwords.map((password) => (
-                            <PasswordEntry
+                        {passwords.map((password, index) => (
+                            <motion.div
                                 key={password.id}
-                                password={password}
-                                availableTags={availableTags}
-                                onEdit={onEdit}
-                                onDelete={onDelete}
-                            />
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.2, delay: 0.3 + index * 0.05 }}
+                            >
+                                <PasswordEntry
+                                    password={password}
+                                    availableTags={availableTags}
+                                    onEdit={onEdit}
+                                    onDelete={onDelete}
+                                />
+                            </motion.div>
                         ))}
                     </div>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, X, GripVertical } from 'lucide-react';
+import { motion } from 'motion/react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import type { Tag } from '../cryptor';
 import CustomDialog from './CustomDialog';
@@ -165,82 +166,86 @@ export default function TagsDialog({ open, onOpenChange, tags, onSave }: TagsDia
             <CustomDialog open={open} onOpenChange={onOpenChange} title="Manage Tags" maxWidth="lg" overlayOpacity="light" showCloseButton={true}>
                 <div className="space-y-3 mb-6 max-h-96 overflow-y-auto pr-2">
                     {editedTags.map((tag, index) => (
-                        <div
+                        <motion.div
                             key={tag.id}
-                            draggable={editingId !== tag.id}
-                            onDragStart={() => handleDragStart(index)}
-                            onDragOver={(e) => handleDragOver(e, index)}
-                            onDragEnd={handleDragEnd}
-                            className={`flex items-center gap-3 bg-neutral-800 rounded-lg p-3 border border-neutral-700 transition-all ${draggedIndex === index ? 'opacity-50 cursor-grabbing' : ''
-                                } ${dragOverIndex === index && draggedIndex !== index
-                                    ? 'border-neutral-400 scale-[1.02]'
-                                    : ''
-                                } ${editingId !== tag.id ? 'cursor-grab' : ''}`}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.2, delay: 0.3 + index * 0.05 }}
                         >
-                            {/* Drag handle */}
-                            {editingId !== tag.id && (
-                                <div className="text-neutral-500 flex-shrink-0 cursor-grab">
-                                    <GripVertical className="w-4 h-4" />
-                                </div>
-                            )}
-
-                            {/* Color picker */}
-                            <div className="relative">
-                                <div
-                                    className="w-8 h-8 rounded-full cursor-pointer border-2 border-neutral-600"
-                                    style={{ backgroundColor: tag.color }}
-                                    onClick={() => {
-                                        const colorPicker = document.getElementById(`color-${tag.id}`);
-                                        if (colorPicker) {
-                                            (colorPicker as HTMLInputElement).showPicker?.();
-                                        }
-                                    }}
-                                />
-                                <input
-                                    id={`color-${tag.id}`}
-                                    type="color"
-                                    value={tag.color}
-                                    onChange={(e) => handleColorChange(tag.id, e.target.value)}
-                                    className="absolute inset-0 opacity-0 cursor-pointer"
-                                />
-                            </div>
-
-                            {/* Tag name */}
-                            {editingId === tag.id ? (
-                                <input
-                                    type="text"
-                                    value={tag.name}
-                                    onChange={(e) => handleNameChange(tag.id, e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') handleFinishEdit(tag.id);
-                                        if (e.key === 'Escape') setEditingId(null);
-                                    }}
-                                    onBlur={() => handleFinishEdit(tag.id)}
-                                    className="flex-1 px-3 py-1.5 bg-neutral-950 border border-neutral-600 rounded text-neutral-50 focus:outline-none focus:border-neutral-400"
-                                    autoFocus
-                                />
-                            ) : (
-                                <div
-                                    onClick={() => handleStartEdit(tag)}
-                                    className="flex-1 px-3 py-1.5 text-neutral-50 font-medium cursor-pointer hover:bg-neutral-700 rounded"
-                                >
-                                    {tag.name}
-                                </div>
-                            )}
-
-                            {/* Delete button */}
-                            <Button
-                                onClick={() => handleDeleteTag(tag.id, tag.name)}
-                                variant="ghost"
-                                size="icon-sm"
-                                className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-700"
+                            <div
+                                draggable={editingId !== tag.id}
+                                onDragStart={() => handleDragStart(index)}
+                                onDragOver={(e) => handleDragOver(e, index)}
+                                onDragEnd={handleDragEnd}
+                                className={`flex items-center gap-3 bg-neutral-800 rounded-lg p-3 border border-neutral-700 transition-all ${draggedIndex === index ? 'opacity-50 cursor-grabbing' : ''
+                                    } ${dragOverIndex === index && draggedIndex !== index
+                                        ? 'border-neutral-400 scale-[1.02]'
+                                        : ''
+                                    } ${editingId !== tag.id ? 'cursor-grab' : ''}`}
                             >
-                                <X className="w-4 h-4" />
-                            </Button>
-                        </div>
-                    ))}
+                                {/* Drag handle */}
+                                {editingId !== tag.id && (
+                                    <div className="text-neutral-500 flex-shrink-0 cursor-grab">
+                                        <GripVertical className="w-4 h-4" />
+                                    </div>
+                                )}
 
-                    {editedTags.length === 0 && (
+                                {/* Color picker */}
+                                <div className="relative">
+                                    <div
+                                        className="w-8 h-8 rounded-full cursor-pointer border-2 border-neutral-600"
+                                        style={{ backgroundColor: tag.color }}
+                                        onClick={() => {
+                                            const colorPicker = document.getElementById(`color-${tag.id}`);
+                                            if (colorPicker) {
+                                                (colorPicker as HTMLInputElement).showPicker?.();
+                                            }
+                                        }}
+                                    />
+                                    <input
+                                        id={`color-${tag.id}`}
+                                        type="color"
+                                        value={tag.color}
+                                        onChange={(e) => handleColorChange(tag.id, e.target.value)}
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                </div>
+
+                                {/* Tag name */}
+                                {editingId === tag.id ? (
+                                    <input
+                                        type="text"
+                                        value={tag.name}
+                                        onChange={(e) => handleNameChange(tag.id, e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') handleFinishEdit(tag.id);
+                                            if (e.key === 'Escape') setEditingId(null);
+                                        }}
+                                        onBlur={() => handleFinishEdit(tag.id)}
+                                        className="flex-1 px-3 py-1.5 bg-neutral-950 border border-neutral-600 rounded text-neutral-50 focus:outline-none focus:border-neutral-400"
+                                        autoFocus
+                                    />
+                                ) : (
+                                    <div
+                                        onClick={() => handleStartEdit(tag)}
+                                        className="flex-1 px-3 py-1.5 text-neutral-50 font-medium cursor-pointer hover:bg-neutral-700 rounded"
+                                    >
+                                        {tag.name}
+                                    </div>
+                                )}
+
+                                {/* Delete button */}
+                                <Button
+                                    onClick={() => handleDeleteTag(tag.id, tag.name)}
+                                    variant="ghost"
+                                    size="icon-sm"
+                                    className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-700"
+                                >
+                                    <X className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </motion.div>
+                    ))}                    {editedTags.length === 0 && (
                         <div className="text-center py-12 text-neutral-500">
                             No tags yet. Click "Add Tag" to create one.
                         </div>
