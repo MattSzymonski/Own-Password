@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 
@@ -8,7 +7,7 @@ interface EditorHeaderProps {
     passwordCount: number;
     hasUnsavedChanges: boolean;
     saving: boolean;
-    onBack: () => void;
+    onBack?: () => void;
     onSave: () => void;
     onDeleteCollection: () => void;
     onManageTags: () => void;
@@ -27,15 +26,25 @@ export default function EditorHeader({
 
     return (
         <div className="mb-8">
-            <div className="flex justify-between items-center mb-4">
-                <Button
-                    onClick={onBack}
-                    variant="ghost"
-                    className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 flex items-center gap-2"
-                >
-                    <ArrowLeft className="w-4 h-4" />
-                    Back to collections
-                </Button>
+            <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2">
+                    {onBack && (
+                        <Button
+                            onClick={onBack}
+                            variant="ghost"
+                            size="icon"
+                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 p-2 translate-y-[2px]"
+                        >
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </Button>
+                    )}
+                    <h1 className="text-5xl font-bold text-neutral-50">
+                        {filename.replace('.pass', '')}
+                        <span className="text-neutral-500">.pass</span>
+                    </h1>
+                </div>
 
                 <div className="flex items-center gap-3">
                     {hasUnsavedChanges && (
@@ -97,13 +106,6 @@ export default function EditorHeader({
                         </AnimatePresence>
                     </div>
                 </div>
-            </div>
-
-            <div>
-                <h1 className="text-5xl font-bold text-neutral-50">
-                    {filename.replace('.pass', '')}
-                    <span className="text-neutral-500">.pass</span>
-                </h1>
             </div>
         </div>
     );

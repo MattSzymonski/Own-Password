@@ -50,7 +50,7 @@ export default function CustomDialog({
                 >
                     <motion.div
                         animate={{
-                            y: animateSuccess ? [0, 10, -10, 0] : 0,
+                            y: animateSuccess ? [0, 10, -20, 0] : 0,
                         }}
                         transition={{
                             duration: 0.4,

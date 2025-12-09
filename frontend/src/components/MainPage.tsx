@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import PasswordFilePicker from './PasswordFilePicker';
 import PasswordFileEditor from './PasswordFileEditor';
 import UnlockDialog from './UnlockDialog';
 import CreateCollectionDialog from './CreateCollectionDialog';
+import AppUnlockDialog from './AppUnlockDialog';
 import type { PasswoodCollection } from '../cryptor';
+import { isAppPasswordRequired, setAppPasswordHash, getAppPasswordHash } from '../utils/auth';
 
 export default function MainPage() {
+    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
+    const hasSingleCollection = singleCollection && singleCollection.trim() !== '';
+
+    const [appUnlocked, setAppUnlocked] = useState(!isAppPasswordRequired() || !!getAppPasswordHash());
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [collection, setCollection] = useState<PasswoodCollection | null>(null);
     const [masterPassword, setMasterPassword] = useState('');
@@ -14,6 +20,14 @@ export default function MainPage() {
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [dialogCollectionName, setDialogCollectionName] = useState('');
     const [isTransitioning, setIsTransitioning] = useState(false);
+
+    // Auto-open unlock dialog for single collection when app unlocks
+    useEffect(() => {
+        if (appUnlocked && hasSingleCollection && !selectedFile && !unlockDialogOpen) {
+            setDialogCollectionName(singleCollection);
+            setUnlockDialogOpen(true);
+        }
+    }, [appUnlocked, hasSingleCollection, singleCollection, selectedFile, unlockDialogOpen]);
 
     const handleFileSelect = (filename: string) => {
         setDialogCollectionName(filename);
@@ -46,6 +60,20 @@ export default function MainPage() {
         }, 250);
     };
 
+    const handleAppUnlocked = (passwordHash: string) => {
+        setAppPasswordHash(passwordHash);
+        setAppUnlocked(true);
+    };
+
+    // Show app unlock dialog if app password is required and not yet unlocked
+    if (!appUnlocked) {
+        return (
+            <div className="bg-black min-h-screen relative">
+                <AppUnlockDialog open={true} onUnlocked={handleAppUnlocked} />
+            </div>
+        );
+    }
+
     return (
         <div className="bg-black min-h-screen relative">
             <AnimatePresence mode="wait">
@@ -65,7 +93,9 @@ export default function MainPage() {
                     </motion.div>
                 ) : (
                     <div key="picker">
-                        <PasswordFilePicker onFileSelect={handleFileSelect} onCreateNew={handleCreateNew} />
+                        {!hasSingleCollection && (
+                            <PasswordFilePicker onFileSelect={handleFileSelect} onCreateNew={handleCreateNew} />
+                        )}
                         <UnlockDialog
                             open={unlockDialogOpen}
                             onOpenChange={setUnlockDialogOpen}

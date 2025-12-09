@@ -22,6 +22,9 @@ interface PasswordFileEditorProps {
 }
 
 export default function PasswordFileEditor({ filename: initialFilename, initialCollection, initialPassword, onBack }: PasswordFileEditorProps) {
+    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
+    const isSingleCollection = singleCollection && singleCollection.trim() !== '';
+
     const [masterPassword] = useState(initialPassword);
     const [filename] = useState(initialFilename);
     const [collection, setCollection] = useState<PasswoodCollection>(initialCollection);
@@ -259,7 +262,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     passwordCount={collection?.passwords?.length || 0}
                     hasUnsavedChanges={hasUnsavedChanges}
                     saving={saving}
-                    onBack={handleBackClick}
+                    onBack={isSingleCollection ? undefined : handleBackClick}
                     onSave={handleSave}
                     onDeleteCollection={handleDeleteCollection}
                     onManageTags={handleManageTags}

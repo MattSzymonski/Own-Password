@@ -17,7 +17,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
 
     useEffect(() => {
         // Set document title based on environment variable
-        document.title = import.meta.env.VITE_APP_NAME || 'Own Password';
+        document.title = import.meta.env.VITE_APP_NAME || import.meta.env.APP_NAME || 'Own Password';
     }, []);
 
     useEffect(() => {
@@ -77,9 +77,9 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
         <div className="min-h-screen bg-neutral-950 p-8">
             <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-12">
-                    {import.meta.env.VITE_APP_NAME ? (
+                    {(import.meta.env.VITE_APP_NAME || import.meta.env.APP_NAME) ? (
                         <h1 className="text-5xl font-black text-neutral-50 mb-4 uppercase tracking-wide" style={{ fontFamily: 'Outfit' }}>
-                            {import.meta.env.VITE_APP_NAME}
+                            {import.meta.env.VITE_APP_NAME || import.meta.env.APP_NAME}
                         </h1>
                     ) : (
                         <div className="w-full max-w-[300px] mx-auto h-[95px]">

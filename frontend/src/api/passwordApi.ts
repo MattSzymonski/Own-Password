@@ -2,7 +2,25 @@
  * API client for password file operations
  */
 
+import { getAppPasswordHash } from '../utils/auth';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
+
+/**
+ * Get headers with app password if required
+ */
+function getHeaders(): HeadersInit {
+    const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+    };
+
+    const appPasswordHash = getAppPasswordHash();
+    if (appPasswordHash) {
+        headers['x-app-password'] = appPasswordHash;
+    }
+
+    return headers;
+}
 
 export interface PasswordFileInfo {
     filename: string;
@@ -20,7 +38,9 @@ export interface PasswordFilesResponse {
  * Fetch list of password files from backend
  */
 export async function fetchPasswordFiles(): Promise<PasswordFilesResponse> {
-    const response = await fetch(`${API_BASE_URL}/password_files`);
+    const response = await fetch(`${API_BASE_URL}/password_files`, {
+        headers: getHeaders(),
+    });
     if (!response.ok) {
         throw new Error('Failed to fetch password files');
     }
@@ -31,7 +51,9 @@ export async function fetchPasswordFiles(): Promise<PasswordFilesResponse> {
  * Download a password file from backend
  */
 export async function downloadPasswordFile(filename: string): Promise<Uint8Array> {
-    const response = await fetch(`${API_BASE_URL}/password_files/${filename}`);
+    const response = await fetch(`${API_BASE_URL}/password_files/${filename}`, {
+        headers: getHeaders(),
+    });
     if (!response.ok) {
         throw new Error('Failed to download password file');
     }
@@ -48,9 +70,7 @@ export async function savePasswordFile(filename: string, data: Uint8Array): Prom
 
     const response = await fetch(`${API_BASE_URL}/password_files/${filename}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
+        headers: getHeaders(),
         body: JSON.stringify({ data: base64 }),
     });
 
@@ -65,6 +85,7 @@ export async function savePasswordFile(filename: string, data: Uint8Array): Prom
 export async function deletePasswordFile(filename: string): Promise<void> {
     const response = await fetch(`${API_BASE_URL}/password_files/${filename}`, {
         method: 'DELETE',
+        headers: getHeaders(),
     });
 
     if (!response.ok) {

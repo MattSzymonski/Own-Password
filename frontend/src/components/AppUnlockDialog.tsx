@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { downloadPasswordFile } from '../api/passwordApi';
-import { decodePasswoodFile } from '../cryptor';
-import type { PasswoodCollection } from '../cryptor';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import CustomDialog from './CustomDialog';
+import { hashPassword } from '../utils/auth';
 
-interface UnlockDialogProps {
+interface AppUnlockDialogProps {
     open: boolean;
-    onOpenChange: (open: boolean) => void;
-    collectionName: string;
-    onUnlocked: (collection: PasswoodCollection, password: string, collectionName: string) => void;
+    onUnlocked: (passwordHash: string) => void;
 }
 
-export default function UnlockDialog({ open, onOpenChange, collectionName, onUnlocked }: UnlockDialogProps) {
-    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
-    const isSingleCollection = singleCollection && singleCollection.trim() !== '';
-
-    const [masterPassword, setMasterPassword] = useState('');
+export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogProps) {
+    const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorPopupMessage, setErrorPopupMessage] = useState('');
@@ -25,19 +18,39 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
 
     useEffect(() => {
         if (open) {
-            setMasterPassword('');
+            setPassword('');
             setUnlockSuccess(false);
         }
     }, [open]);
 
     const handleUnlock = async () => {
+        if (!password.trim()) {
+            setErrorPopupMessage('Please enter a password');
+            setShowErrorPopup(true);
+            setTimeout(() => setShowErrorPopup(false), 2000);
+            return;
+        }
+
         try {
             setLoading(true);
-            const fileData = await downloadPasswordFile(collectionName);
-            const db = await decodePasswoodFile(fileData, masterPassword);
+
+            // Hash the password
+            const passwordHash = await hashPassword(password);
+
+            // Verify with backend by making a test request
+            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3010/api'}/password_files`, {
+                headers: {
+                    'x-app-password': passwordHash,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Incorrect password');
+            }
+
             setUnlockSuccess(true);
             setTimeout(() => {
-                onUnlocked(db, masterPassword, collectionName);
+                onUnlocked(passwordHash);
             }, 400);
         } catch (err) {
             setErrorPopupMessage('Incorrect password');
@@ -53,29 +66,28 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
         <>
             <CustomDialog
                 open={open}
-                onOpenChange={onOpenChange}
-                title="Unlock Collection"
+                onOpenChange={() => { }}
+                title="Unlock App"
                 maxWidth="sm"
                 animateSuccess={unlockSuccess}
-                showCloseButton={!isSingleCollection}
+                showCloseButton={false}
             >
-                <Dialog.Description className="text-lg font-bold text-neutral-50 mb-6" style={{ fontFamily: 'Outfit' }}>
-                    {collectionName.replace('.pass', '')}
-                    <span className="text-neutral-500">.pass</span>
+                <Dialog.Description className="text-neutral-300 mb-6">
+                    Enter the app password to continue
                 </Dialog.Description>
 
                 <div className="space-y-3">
                     <div>
-                        <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
-                            <span>Master Password</span>
+                        <label className="block text-neutral-300 mb-2 text-sm">
+                            App Password
                         </label>
                         <input
                             type="password"
-                            value={masterPassword}
-                            onChange={(e) => setMasterPassword(e.target.value)}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
                             className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                            placeholder="Enter master password"
+                            placeholder="Enter app password"
                             autoFocus
                         />
                     </div>
