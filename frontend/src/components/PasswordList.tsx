@@ -76,10 +76,10 @@ export default function PasswordList({
                 </h3>
                 <Button
                     onClick={onAddNew}
-                    className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
+                    className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2 md:px-6 px-3"
                 >
                     <Plus className="w-5 h-5" />
-                    New Password
+                    <span className="hidden md:inline">New Password</span>
                 </Button>
             </div>
 

@@ -82,11 +82,13 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                             {import.meta.env.VITE_APP_NAME}
                         </h1>
                     ) : (
-                        <img
-                            src="/images/own_password_logo.svg"
-                            alt="Own Password"
-                            className="w-full max-w-[300px] mx-auto"
-                        />
+                        <div className="w-full max-w-[300px] mx-auto h-[95px]">
+                            <img
+                                src="/images/own_password_logo.svg"
+                                alt="Own Password"
+                                className="w-full h-full"
+                            />
+                        </div>
                     )}
                 </div>
 
@@ -97,10 +99,10 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                         </h2>
                         <Button
                             onClick={onCreateNew}
-                            className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
+                            className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2 md:px-6 px-3"
                         >
                             <Plus className="w-5 h-5" />
-                            New Collection
+                            <span className="hidden md:inline">New Collection</span>
                         </Button>
                     </div>
 
@@ -124,7 +126,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
-                                                <h3 className="text-lg font-medium text-neutral-50 group-hover:text-neutral-200 transition-colors">
+                                                <h3 className="text-2xl font-medium text-neutral-50 group-hover:text-neutral-200 transition-colors">
                                                     {file.filename.replace('.pass', '')}
                                                     <span className="text-neutral-500">.pass</span>
                                                 </h3>
