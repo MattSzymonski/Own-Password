@@ -71,9 +71,11 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
         <div className="min-h-screen bg-neutral-950 p-8">
             <div className="max-w-2xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-5xl font-black text-neutral-50 mb-4 uppercase tracking-[px]" style={{ fontFamily: 'Outfit' }}>
-                        Own Password
-                    </h1>
+                    <img
+                        src="/images/own_password_logo.svg"
+                        alt="Own Password"
+                        className="w-full max-w-[300px] mx-auto"
+                    />
                 </div>
 
                 <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
