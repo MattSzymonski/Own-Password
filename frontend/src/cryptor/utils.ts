@@ -2,7 +2,7 @@
  * Utility functions for Passwood
  */
 
-import type { PasswoodCollection, PasswoodEntry } from './types';
+import type { PasswoodCollection, PasswoodPassword } from './types';
 import { encodePasswoodFile, decodePasswoodFile } from './format';
 
 // Type alias for backward compatibility
@@ -17,7 +17,7 @@ export function createEmptyCollection(): PasswoodCollection {
         version: '1.0.0',
         created: now,
         modified: now,
-        entries: []
+        passwords: []
     };
 }
 
@@ -25,28 +25,28 @@ export function createEmptyCollection(): PasswoodCollection {
 export const createEmptyDatabase = createEmptyCollection;
 
 /**
- * Generate a unique ID for an entry
+ * Generate a unique ID for a password
  */
-export function generateEntryId(): string {
+export function generatePasswordId(): string {
     return crypto.randomUUID();
 }
 
 /**
- * Create a new password entry
+ * Create a new password
  */
-export function createEntry(
+export function createPassword(
     title: string,
-    username: string,
+    login: string,
     password: string,
     url?: string,
     notes?: string,
     tags?: string[]
-): PasswoodEntry {
+): PasswoodPassword {
     const now = new Date().toISOString();
     return {
-        id: generateEntryId(),
+        id: generatePasswordId(),
         title,
-        username,
+        login,
         password,
         url,
         notes,
@@ -57,57 +57,57 @@ export function createEntry(
 }
 
 /**
- * Add an entry to the database
+ * Add a password to the database
  */
-export function addEntry(database: PasswoodDatabase, entry: PasswoodEntry): PasswoodDatabase {
+export function addPassword(database: PasswoodDatabase, password: PasswoodPassword): PasswoodDatabase {
     return {
         ...database,
         modified: new Date().toISOString(),
-        entries: [...database.entries, entry]
+        passwords: [...database.passwords, password]
     };
 }
 
 /**
- * Update an entry in the database
+ * Update a password in the database
  */
-export function updateEntry(
+export function updatePassword(
     database: PasswoodDatabase,
-    entryId: string,
-    updates: Partial<Omit<PasswoodEntry, 'id' | 'created'>>
+    passwordId: string,
+    updates: Partial<Omit<PasswoodPassword, 'id' | 'created'>>
 ): PasswoodDatabase {
     const now = new Date().toISOString();
     return {
         ...database,
         modified: now,
-        entries: database.entries.map(entry =>
-            entry.id === entryId
-                ? { ...entry, ...updates, modified: now }
-                : entry
+        passwords: database.passwords.map(password =>
+            password.id === passwordId
+                ? { ...password, ...updates, modified: now }
+                : password
         )
     };
 }
 
 /**
- * Delete an entry from the database
+ * Delete a password from the database
  */
-export function deleteEntry(database: PasswoodDatabase, entryId: string): PasswoodDatabase {
+export function deletePassword(database: PasswoodDatabase, passwordId: string): PasswoodDatabase {
     return {
         ...database,
         modified: new Date().toISOString(),
-        entries: database.entries.filter(entry => entry.id !== entryId)
+        passwords: database.passwords.filter(password => password.id !== passwordId)
     };
 }
 
 /**
- * Search entries by title, username, or tags
+ * Search passwords by title, login, or tags
  */
-export function searchEntries(database: PasswoodDatabase, query: string): PasswoodEntry[] {
+export function searchPasswords(database: PasswoodDatabase, query: string): PasswoodPassword[] {
     const lowerQuery = query.toLowerCase();
-    return database.entries.filter(entry =>
-        entry.title.toLowerCase().includes(lowerQuery) ||
-        entry.username.toLowerCase().includes(lowerQuery) ||
-        entry.url?.toLowerCase().includes(lowerQuery) ||
-        entry.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
+    return database.passwords.filter(password =>
+        password.title.toLowerCase().includes(lowerQuery) ||
+        password.login.toLowerCase().includes(lowerQuery) ||
+        password.url?.toLowerCase().includes(lowerQuery) ||
+        password.tags?.some(tag => tag.toLowerCase().includes(lowerQuery))
     );
 }
 

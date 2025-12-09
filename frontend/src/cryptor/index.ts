@@ -11,7 +11,7 @@
  */
 
 export type {
-    PasswoodEntry,
+    PasswoodPassword,
     CustomField,
     PasswoodCollection,
     PasswoodDatabase, // Alias for backward compatibility

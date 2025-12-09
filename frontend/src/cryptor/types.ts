@@ -2,10 +2,10 @@
  * Types for Passwood encrypted password storage
  */
 
-export interface PasswoodEntry {
+export interface PasswoodPassword {
     id: string;
     title: string;
-    username: string;
+    login: string;
     password: string;
     url?: string;
     notes?: string;
@@ -25,7 +25,7 @@ export interface PasswoodCollection {
     version: string;
     created: string;
     modified: string;
-    entries: PasswoodEntry[];
+    passwords: PasswoodPassword[];
 }
 
 // Backward compatibility alias

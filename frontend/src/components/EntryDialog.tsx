@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import type { PasswoodEntry } from '../cryptor';
+import type { PasswoodPassword } from '../cryptor';
 import { generatePassword, calculatePasswordStrength } from '../cryptor/utils';
 
 interface EntryDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    entry?: PasswoodEntry | null;
+    password?: PasswoodPassword | null;
     existingTags: string[];
     onSave: (data: {
         title: string;
-        username: string;
+        login: string;
         password: string;
         url?: string;
         notes?: string;
@@ -18,10 +18,10 @@ interface EntryDialogProps {
     }) => void;
 }
 
-export default function EntryDialog({ open, onOpenChange, entry, existingTags, onSave }: EntryDialogProps) {
+export default function EntryDialog({ open, onOpenChange, password, existingTags, onSave }: EntryDialogProps) {
     const [formData, setFormData] = useState({
         title: '',
-        username: '',
+        login: '',
         password: '',
         url: '',
         notes: '',
@@ -32,19 +32,19 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
     const [tagInput, setTagInput] = useState('');
 
     useEffect(() => {
-        if (entry) {
+        if (password) {
             setFormData({
-                title: entry.title,
-                username: entry.username,
-                password: entry.password,
-                url: entry.url || '',
-                notes: entry.notes || '',
-                tags: entry.tags?.join(', ') || ''
+                title: password.title,
+                login: password.login,
+                password: password.password,
+                url: password.url || '',
+                notes: password.notes || '',
+                tags: password.tags?.join(', ') || ''
             });
         } else {
             setFormData({
                 title: '',
-                username: '',
+                login: '',
                 password: '',
                 url: '',
                 notes: '',
@@ -52,7 +52,7 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
             });
         }
         setError(null);
-    }, [entry, open]);
+    }, [password, open]);
 
     const handleGeneratePassword = () => {
         const newPassword = generatePassword(16);
@@ -72,7 +72,7 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
 
         onSave({
             title: formData.title,
-            username: formData.username,
+            login: formData.login,
             password: formData.password,
             url: formData.url || undefined,
             notes: formData.notes || undefined,
@@ -110,7 +110,7 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
                 <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50" />
                 <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800 max-w-md w-full max-h-[90vh] overflow-y-auto z-50">
                     <Dialog.Title className="text-2xl font-semibold text-neutral-50 mb-6">
-                        {entry ? 'Edit Entry' : 'Add New Entry'}
+                        {password ? 'Edit Password' : 'Add New Password'}
                     </Dialog.Title>
 
                     {error && (
@@ -121,7 +121,10 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
 
                     <div className="space-y-3">
                         <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">Title *</label>
+                            <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
+                                <span>Title</span>
+                                <span className="text-neutral-600 text-xs">Required</span>
+                            </label>
                             <input
                                 type="text"
                                 placeholder="Enter title"
@@ -133,18 +136,21 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
                         </div>
 
                         <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">Username</label>
+                            <label className="block text-neutral-300 mb-2 text-sm">Login</label>
                             <input
                                 type="text"
-                                placeholder="Enter username"
-                                value={formData.username}
-                                onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
+                                placeholder="Enter login"
+                                value={formData.login}
+                                onChange={(e) => setFormData(prev => ({ ...prev, login: e.target.value }))}
                                 className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">Password *</label>
+                            <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
+                                <span>Password</span>
+                                <span className="text-neutral-600 text-xs">Required</span>
+                            </label>
                             <div className="relative">
                                 <input
                                     type="text"
@@ -239,7 +245,7 @@ export default function EntryDialog({ open, onOpenChange, entry, existingTags, o
                                 onClick={handleSave}
                                 className="flex-1 px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105"
                             >
-                                {entry ? 'Update' : 'Add Entry'}
+                                {password ? 'Update' : 'Add Password'}
                             </button>
                             <button
                                 onClick={() => onOpenChange(false)}
