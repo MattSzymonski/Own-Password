@@ -4,16 +4,12 @@ interface TagFilterProps {
     availableTags: Tag[];
     selectedTags: Set<string>;
     onToggleTag: (tagName: string) => void;
-    onClearFilters: () => void;
-    filteredCount: number;
 }
 
 export default function TagFilter({
     availableTags,
     selectedTags,
-    onToggleTag,
-    onClearFilters,
-    filteredCount
+    onToggleTag
 }: TagFilterProps) {
     if (availableTags.length === 0) {
         return null;
@@ -29,8 +25,8 @@ export default function TagFilter({
                             key={tag.id}
                             onClick={() => onToggleTag(tag.name)}
                             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isSelected
-                                    ? 'text-white shadow-lg scale-105'
-                                    : 'text-white opacity-60 hover:opacity-100'
+                                ? 'text-white shadow-lg scale-105'
+                                : 'text-white opacity-60 hover:opacity-100'
                                 }`}
                             style={{ backgroundColor: tag.color }}
                         >

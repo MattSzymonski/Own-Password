@@ -40,10 +40,10 @@ export default function CustomDialog({
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal>
                 <Dialog.Overlay
-                    className={`fixed inset-0 ${overlayOpacityClasses[overlayOpacity]} backdrop-blur-sm ${zIndexClass} data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0`}
+                    className={`fixed inset-0 ${overlayOpacityClasses[overlayOpacity]} backdrop-blur-sm ${zIndexClass} data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 duration-300`}
                 />
                 <Dialog.Content
-                    className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border ${overlayOpacity === 'light' ? 'border-neutral-700' : 'border-neutral-800'} ${maxWidthClasses[maxWidth]} w-full max-h-[90vh] overflow-y-auto ${zIndexClass} resize-none focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95`}
+                    className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border ${overlayOpacity === 'light' ? 'border-neutral-700' : 'border-neutral-800'} ${maxWidthClasses[maxWidth]} w-full max-h-[90vh] overflow-y-auto ${zIndexClass} resize-none focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300`}
                 >
                     {title && (
                         <Dialog.Title className="text-2xl font-semibold text-neutral-50 mb-6">

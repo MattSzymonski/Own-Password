@@ -63,7 +63,7 @@ export default function TagPicker({ availableTags, selectedTagIds, onTagsChange 
                         <span>{tag.name}</span>
                         <button
                             onClick={() => handleRemoveTag(tag.id)}
-                            className="hover:bg-black/20 rounded-full p-0.5 transition-colors"
+                            className="hover:bg-black/20 rounded-full p-0.5 transition-colors cursor-pointer"
                         >
                             <X className="w-3.5 h-3.5" />
                         </button>
@@ -104,7 +104,7 @@ export default function TagPicker({ availableTags, selectedTagIds, onTagsChange 
                                                     handleAddTag(tag.id);
                                                     setShowPicker(false);
                                                 }}
-                                                className="w-full px-3 py-2 text-left rounded hover:bg-neutral-800 flex items-center gap-2"
+                                                className="w-full px-3 py-2 text-left rounded hover:bg-neutral-800 flex items-center gap-2 cursor-pointer"
                                             >
                                                 <div
                                                     className="w-4 h-4 rounded-full"

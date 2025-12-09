@@ -162,7 +162,7 @@ export default function TagsDialog({ open, onOpenChange, tags, onSave }: TagsDia
 
     return (
         <>
-            <CustomDialog open={open} onOpenChange={onOpenChange} title="Manage Tags" maxWidth="lg" overlayOpacity="light" showCloseButton={false}>
+            <CustomDialog open={open} onOpenChange={onOpenChange} title="Manage Tags" maxWidth="lg" overlayOpacity="light" showCloseButton={true}>
                 <div className="space-y-3 mb-6 max-h-96 overflow-y-auto pr-2">
                     {editedTags.map((tag, index) => (
                         <div
@@ -171,15 +171,15 @@ export default function TagsDialog({ open, onOpenChange, tags, onSave }: TagsDia
                             onDragStart={() => handleDragStart(index)}
                             onDragOver={(e) => handleDragOver(e, index)}
                             onDragEnd={handleDragEnd}
-                            className={`flex items-center gap-3 bg-neutral-800 rounded-lg p-3 border border-neutral-700 transition-all ${draggedIndex === index ? 'opacity-50' : ''
+                            className={`flex items-center gap-3 bg-neutral-800 rounded-lg p-3 border border-neutral-700 transition-all ${draggedIndex === index ? 'opacity-50 cursor-grabbing' : ''
                                 } ${dragOverIndex === index && draggedIndex !== index
                                     ? 'border-neutral-400 scale-[1.02]'
                                     : ''
-                                } ${editingId !== tag.id ? 'cursor-move' : ''}`}
+                                } ${editingId !== tag.id ? 'cursor-grab' : ''}`}
                         >
                             {/* Drag handle */}
                             {editingId !== tag.id && (
-                                <div className="text-neutral-500 flex-shrink-0">
+                                <div className="text-neutral-500 flex-shrink-0 cursor-grab">
                                     <GripVertical className="w-4 h-4" />
                                 </div>
                             )}

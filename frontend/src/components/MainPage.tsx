@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import PasswordFilePicker from './PasswordFilePicker';
 import PasswordFileEditor from './PasswordFileEditor';
 import UnlockDialog from './UnlockDialog';
+import CreateCollectionDialog from './CreateCollectionDialog';
 import type { PasswoodCollection } from '../cryptor';
 
 export default function MainPage() {
@@ -10,20 +11,17 @@ export default function MainPage() {
     const [collection, setCollection] = useState<PasswoodCollection | null>(null);
     const [masterPassword, setMasterPassword] = useState('');
     const [unlockDialogOpen, setUnlockDialogOpen] = useState(false);
+    const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [dialogCollectionName, setDialogCollectionName] = useState('');
-    const [isNewFile, setIsNewFile] = useState(false);
     const [isTransitioning, setIsTransitioning] = useState(false);
 
     const handleFileSelect = (filename: string) => {
         setDialogCollectionName(filename);
-        setIsNewFile(false);
         setUnlockDialogOpen(true);
     };
 
     const handleCreateNew = () => {
-        setDialogCollectionName('new.pass');
-        setIsNewFile(true);
-        setUnlockDialogOpen(true);
+        setCreateDialogOpen(true);
     };
 
     const handleUnlocked = (col: PasswoodCollection, password: string, filename: string) => {
@@ -33,6 +31,7 @@ export default function MainPage() {
             setMasterPassword(password);
             setSelectedFile(filename);
             setUnlockDialogOpen(false);
+            setCreateDialogOpen(false);
         }, 250);
         setTimeout(() => setIsTransitioning(false), 500);
     };
@@ -71,8 +70,12 @@ export default function MainPage() {
                             open={unlockDialogOpen}
                             onOpenChange={setUnlockDialogOpen}
                             collectionName={dialogCollectionName}
-                            isNewFile={isNewFile}
                             onUnlocked={handleUnlocked}
+                        />
+                        <CreateCollectionDialog
+                            open={createDialogOpen}
+                            onOpenChange={setCreateDialogOpen}
+                            onCreated={handleUnlocked}
                         />
                     </div>
                 )}

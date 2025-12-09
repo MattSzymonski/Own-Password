@@ -211,10 +211,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         });
     };
 
-    const clearTagFilters = () => {
-        setSelectedTags(new Set());
-    };
-
     // Get all unique tag names from passwords
     const allTags = Array.from(
         new Set(
@@ -279,13 +275,11 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     <PasswordList
                         passwords={filteredPasswords}
                         searchQuery={searchQuery}
-                        allTags={allTags}
                         availableTags={collection.tags || []}
                         availableTagsForFilter={availableTagsForFilter}
                         selectedTags={selectedTags}
                         onSearchChange={setSearchQuery}
                         onToggleTag={toggleTagFilter}
-                        onClearFilters={clearTagFilters}
                         onAddNew={handleNewPassword}
                         onEdit={handleEditPassword}
                         onDelete={handleDeletePassword}

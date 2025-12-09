@@ -8,13 +8,11 @@ import { useState, useRef, useEffect } from 'react';
 interface PasswordListProps {
     passwords: PasswoodPassword[];
     searchQuery: string;
-    allTags: string[];
     availableTags: Tag[];
     availableTagsForFilter: Tag[];
     selectedTags: Set<string>;
     onSearchChange: (query: string) => void;
     onToggleTag: (tag: string) => void;
-    onClearFilters: () => void;
     onAddNew: () => void;
     onEdit: (password: PasswoodPassword) => void;
     onDelete: (id: string) => void;
@@ -23,13 +21,11 @@ interface PasswordListProps {
 export default function PasswordList({
     passwords,
     searchQuery,
-    allTags,
     availableTags,
     availableTagsForFilter,
     selectedTags,
     onSearchChange,
     onToggleTag,
-    onClearFilters,
     onAddNew,
     onEdit,
     onDelete
@@ -102,8 +98,6 @@ export default function PasswordList({
                 availableTags={availableTagsForFilter}
                 selectedTags={selectedTags}
                 onToggleTag={onToggleTag}
-                onClearFilters={onClearFilters}
-                filteredCount={passwords.length}
             />
 
             {passwords.length === 0 ? (
