@@ -78,7 +78,7 @@ export default function PasswordList({
                     className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
                 >
                     <Plus className="w-5 h-5" />
-                    Add New Password
+                    New Password
                 </Button>
             </div>
 

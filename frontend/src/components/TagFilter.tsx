@@ -28,7 +28,7 @@ export default function TagFilter({
                         onClick={() => onToggleTag(tag)}
                         variant={selectedTags.has(tag) ? 'default' : 'secondary'}
                         className={`px-3 py-1.5 rounded-full text-sm font-medium h-auto ${selectedTags.has(tag)
-                            ? 'bg-neutral-50 text-neutral-950 shadow-lg'
+                            ? 'bg-neutral-50 text-neutral-950 shadow-lg hover:bg-neutral-200'
                             : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 border border-neutral-700'
                             }`}
                     >
