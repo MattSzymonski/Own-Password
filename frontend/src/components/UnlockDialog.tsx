@@ -22,11 +22,13 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorPopupMessage, setErrorPopupMessage] = useState('');
     const [unlockSuccess, setUnlockSuccess] = useState(false);
+    const [unlockError, setUnlockError] = useState(false);
 
     useEffect(() => {
         if (open) {
             setMasterPassword('');
             setUnlockSuccess(false);
+            setUnlockError(false);
         }
     }, [open]);
 
@@ -40,6 +42,8 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
                 onUnlocked(db, masterPassword, collectionName);
             }, 400);
         } catch (err) {
+            setUnlockError(true);
+            setTimeout(() => setUnlockError(false), 500);
             setErrorPopupMessage('Incorrect password');
             setShowErrorPopup(true);
             setTimeout(() => setShowErrorPopup(false), 2000);
@@ -57,6 +61,7 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
                 title="Unlock Collection"
                 maxWidth="sm"
                 animateSuccess={unlockSuccess}
+                animateError={unlockError}
                 showCloseButton={!isSingleCollection}
             >
                 <Dialog.Description className="text-lg font-bold text-neutral-50 mb-6" style={{ fontFamily: 'Outfit' }}>
@@ -86,7 +91,7 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
                             disabled={loading}
                             className="w-full px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Unlocking...' : 'Unlock'}
+                            Unlock
                         </Button>
                     </div>
                 </div>
