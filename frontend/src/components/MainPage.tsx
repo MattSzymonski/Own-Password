@@ -6,7 +6,7 @@ import UnlockDialog from './UnlockDialog';
 import CreateCollectionDialog from './CreateCollectionDialog';
 import AppUnlockDialog from './AppUnlockDialog';
 import type { PasswoodCollection } from '../cryptor';
-import { isAppPasswordRequired, setAppPassword, getAppPassword } from '../utils/auth';
+import { isAppPasswordRequired, setAppPassword, getAppPassword, clearAppPassword } from '../utils/auth';
 
 export default function MainPage() {
     const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
@@ -56,7 +56,7 @@ export default function MainPage() {
         setTimeout(() => {
             setSelectedFile(null);
             setCollection(null);
-            setMasterPassword('');
+            setMasterPassword(''); // Clear from state
             setIsTransitioning(false);
         }, 250);
     };
@@ -73,7 +73,7 @@ export default function MainPage() {
     const handleLockApp = () => {
         setIsTransitioning(true);
         setTimeout(() => {
-            setAppPassword('');
+            clearAppPassword();
             setAppUnlocked(false);
             setSelectedFile(null);
             setCollection(null);

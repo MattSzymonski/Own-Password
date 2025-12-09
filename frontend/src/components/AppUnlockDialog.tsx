@@ -56,7 +56,6 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
             setErrorPopupMessage('Incorrect password');
             setShowErrorPopup(true);
             setTimeout(() => setShowErrorPopup(false), 2000);
-            console.error(err);
         } finally {
             setLoading(false);
         }

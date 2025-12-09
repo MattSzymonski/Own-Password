@@ -25,7 +25,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
     const isSingleCollection = singleCollection && singleCollection.trim() !== '';
 
-    const [masterPassword] = useState(initialPassword);
+    const [masterPassword, setMasterPassword] = useState(initialPassword);
     const [filename] = useState(initialFilename);
     const [collection, setCollection] = useState<PasswoodCollection>(initialCollection);
     const [error, setError] = useState<string | null>(null);
@@ -45,6 +45,43 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         onConfirm: () => void;
         danger?: boolean;
     }>({ open: false, title: '', message: '', onConfirm: () => { } });
+
+    // Clear master password from memory on unmount
+    useEffect(() => {
+        return () => {
+            setMasterPassword('');
+        };
+    }, []);
+
+    // Auto-lock after 15 minutes of inactivity
+    useEffect(() => {
+        const INACTIVITY_TIMEOUT = 15 * 60 * 1000; // 15 minutes
+        let inactivityTimer: number;
+
+        const resetTimer = () => {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                // Clear sensitive data and go back
+                setMasterPassword('');
+                onBack();
+            }, INACTIVITY_TIMEOUT);
+        };
+
+        // Track user activity
+        const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+        events.forEach(event => {
+            document.addEventListener(event, resetTimer);
+        });
+
+        resetTimer(); // Initial timer
+
+        return () => {
+            clearTimeout(inactivityTimer);
+            events.forEach(event => {
+                document.removeEventListener(event, resetTimer);
+            });
+        };
+    }, [onBack]);
 
     // Warn before closing tab/window with unsaved changes
     useEffect(() => {
@@ -79,7 +116,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
             setTimeout(() => setShowSavePopup(false), 2000);
         } catch (err) {
             setError('Failed to save password file');
-            console.error(err);
         } finally {
             setSaving(false);
         }
@@ -97,7 +133,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     onBack();
                 } catch (err) {
                     setError('Failed to delete password file');
-                    console.error(err);
                 }
             }
         });

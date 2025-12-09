@@ -56,8 +56,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
             const response = await fetchPasswordFiles();
             setFiles(response.files);
         } catch (err) {
-            setError('Failed to load password files');
-            console.error(err);
+            setError('Failed to load password files. Please try again.');
         } finally {
             setLoading(false);
         }

@@ -64,7 +64,6 @@ export default function CreateCollectionDialog({ open, onOpenChange, onCreated }
             setErrorPopupMessage('Failed to create password file');
             setShowErrorPopup(true);
             setTimeout(() => setShowErrorPopup(false), 2000);
-            console.error(err);
         } finally {
             setLoading(false);
         }

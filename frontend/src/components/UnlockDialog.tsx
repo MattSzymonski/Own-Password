@@ -47,7 +47,6 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
             setErrorPopupMessage('Incorrect password');
             setShowErrorPopup(true);
             setTimeout(() => setShowErrorPopup(false), 2000);
-            console.error(err);
         } finally {
             setLoading(false);
         }
