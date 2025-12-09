@@ -70,7 +70,7 @@ export default function PasswordList({
     return (
         <div className="bg-neutral-900 rounded-2xl p-6 shadow-xl border border-neutral-800 h-full flex flex-col">
             <div className="flex justify-between items-center mb-6 flex-shrink-0">
-                <h3 className="text-2xl font-semibold text-neutral-50">
+                <h3 className="text-3xl font-semibold text-neutral-50">
                     Passwords
                 </h3>
                 <Button
@@ -83,7 +83,7 @@ export default function PasswordList({
             </div>
 
             {/* Search Bar */}
-            <div className="mb-4 flex-shrink-0">
+            <div className="mb-3 flex-shrink-0">
                 <input
                     type="text"
                     placeholder="Search passwords..."

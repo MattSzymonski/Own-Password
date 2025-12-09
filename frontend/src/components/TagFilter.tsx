@@ -21,18 +21,6 @@ export default function TagFilter({
 
     return (
         <div className="mb-6 flex-shrink-0">
-            <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-neutral-300">Filter by tags:</h3>
-                {selectedTags.size > 0 && (
-                    <Button
-                        onClick={onClearFilters}
-                        variant="ghost"
-                        className="text-xs text-neutral-400 hover:text-neutral-50 underline h-auto p-0"
-                    >
-                        Clear filters
-                    </Button>
-                )}
-            </div>
             <div className="flex flex-wrap gap-2">
                 {allTags.map((tag) => (
                     <Button
