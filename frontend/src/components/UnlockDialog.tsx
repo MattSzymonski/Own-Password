@@ -4,6 +4,7 @@ import { downloadPasswordFile, savePasswordFile } from '../api/passwordApi';
 import { decodePasswoodFile, encodePasswoodFile } from '../cryptor';
 import { createEmptyCollection } from '../cryptor/utils';
 import type { PasswoodCollection } from '../cryptor';
+import { Button } from '@/components/animate-ui/components/buttons/button';
 
 const DEV = import.meta.env.DEV;
 const MIN_PASSWORD_LENGTH = DEV ? 3 : 12;
@@ -148,13 +149,13 @@ export default function UnlockDialog({ open, onOpenChange, collectionName: initi
                             </div>
                         )}
 
-                        <button
+                        <Button
                             onClick={handleUnlock}
                             disabled={loading}
-                            className="w-full px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Loading...' : isNewFile ? 'Create & Unlock' : 'Unlock'}
-                        </button>
+                        </Button>
                     </div>
 
                     <Dialog.Close className="absolute right-4 top-4 text-neutral-400 hover:text-neutral-50 transition-colors">

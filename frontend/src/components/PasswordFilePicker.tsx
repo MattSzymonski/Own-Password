@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { fetchPasswordFiles } from '../api/passwordApi';
 import type { PasswordFileInfo } from '../api/passwordApi';
+import { Button } from '@/components/animate-ui/components/buttons/button';
 
 interface PasswordFilePickerProps {
     onFileSelect: (filename: string) => void;
@@ -55,11 +56,11 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
             <div className="min-h-screen flex items-center justify-center bg-neutral-950">
                 <div className="text-center">
                     <div className="text-red-400 text-xl mb-4">{error}</div>
-                    <button
+                    <Button
                         onClick={loadFiles}
-                        className="px-6 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg transition-colors">
+                        className="px-6 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg">
                         Retry
-                    </button>
+                    </Button>
                 </div>
             </div>
         );
@@ -82,13 +83,13 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                         <h2 className="text-2xl font-semibold text-neutral-50">
                             Your Password Collections
                         </h2>
-                        <button
+                        <Button
                             onClick={onCreateNew}
-                            className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                            className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
                         >
                             <Plus className="w-5 h-5" />
                             New Collection
-                        </button>
+                        </Button>
                     </div>
 
                     {files.length === 0 ? (

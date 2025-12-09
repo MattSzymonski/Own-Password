@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import type { PasswoodPassword } from '../cryptor';
 import { generatePassword, calculatePasswordStrength } from '../cryptor/utils';
+import { Button } from '@/components/animate-ui/components/buttons/button';
 
 interface EntryDialogProps {
     open: boolean;
@@ -159,13 +160,14 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
                                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                                     className="w-full px-4 py-3 pr-28 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
                                 />
-                                <button
+                                <Button
                                     type="button"
                                     onClick={handleGeneratePassword}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-xs rounded transition-colors font-medium"
+                                    size="sm"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-xs rounded font-medium h-auto"
                                 >
                                     Generate
-                                </button>
+                                </Button>
                             </div>
                             {formData.password && (
                                 <div className="mt-2">
@@ -227,44 +229,48 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
                             {showTagSuggestions && filteredSuggestions.length > 0 && (
                                 <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl max-h-48 overflow-y-auto">
                                     {filteredSuggestions.map((tag) => (
-                                        <button
+                                        <Button
                                             key={tag}
                                             type="button"
                                             onClick={() => handleTagSelect(tag)}
-                                            className="w-full text-left px-4 py-2 hover:bg-neutral-800 text-neutral-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                                            variant="ghost"
+                                            className="w-full text-left px-4 py-2 hover:bg-neutral-800 text-neutral-50 first:rounded-t-lg last:rounded-b-lg h-auto justify-start"
                                         >
                                             <span className="font-medium">{tag}</span>
-                                        </button>
+                                        </Button>
                                     ))}
                                 </div>
                             )}
                         </div>
 
                         <div className="flex gap-3 pt-4">
-                            <button
+                            <Button
                                 onClick={handleSave}
-                                className="flex-1 px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105"
+                                className="flex-1 px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium"
                             >
                                 {password ? 'Update' : 'Add Password'}
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 onClick={() => onOpenChange(false)}
-                                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium transition-colors"
+                                variant="secondary"
+                                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium"
                             >
                                 Cancel
-                            </button>
+                            </Button>
                         </div>
                     </div>
 
                     <Dialog.Close asChild>
-                        <button
-                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50 transition-colors"
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50"
                             aria-label="Close"
                         >
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                        </button>
+                        </Button>
                     </Dialog.Close>
                 </Dialog.Content>
             </Dialog.Portal>

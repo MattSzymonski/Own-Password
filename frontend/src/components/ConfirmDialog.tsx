@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
+import { Button } from '@/components/animate-ui/components/buttons/button';
 
 interface ConfirmDialogProps {
     open: boolean;
@@ -40,32 +41,36 @@ export default function ConfirmDialog({
                     </Dialog.Description>
 
                     <div className="flex gap-3">
-                        <button
+                        <Button
                             onClick={handleConfirm}
-                            className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${danger
-                                    ? 'bg-red-600 hover:bg-red-700 text-neutral-50'
-                                    : 'bg-neutral-50 hover:bg-neutral-200 text-neutral-950'
+                            variant={danger ? 'destructive' : 'default'}
+                            className={`flex-1 px-6 py-3 rounded-lg font-medium ${danger
+                                ? 'bg-red-600 hover:bg-red-700 text-neutral-50'
+                                : 'bg-neutral-50 hover:bg-neutral-200 text-neutral-950'
                                 }`}
                         >
                             {confirmLabel}
-                        </button>
-                        <button
+                        </Button>
+                        <Button
                             onClick={() => onOpenChange(false)}
-                            className="flex-1 px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium transition-colors"
+                            variant="secondary"
+                            className="flex-1 px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium"
                         >
                             {cancelLabel}
-                        </button>
+                        </Button>
                     </div>
 
                     <Dialog.Close asChild>
-                        <button
-                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50 transition-colors"
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50"
                             aria-label="Close"
                         >
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                             </svg>
-                        </button>
+                        </Button>
                     </Dialog.Close>
                 </Dialog.Content>
             </Dialog.Portal>

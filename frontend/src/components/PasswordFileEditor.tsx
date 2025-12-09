@@ -5,6 +5,7 @@ import { encodePasswoodFile } from '../cryptor';
 import type { PasswoodCollection, PasswoodPassword } from '../cryptor';
 import EntryDialog from './EntryDialog';
 import ConfirmDialog from './ConfirmDialog';
+import { Button } from '@/components/animate-ui/components/buttons/button';
 import {
     createPassword,
     addPassword,
@@ -215,7 +216,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                 {/* Header */}
                 <div className="mb-8 flex justify-between items-center">
                     <div>
-                        <button
+                        <Button
                             onClick={() => {
                                 if (hasUnsavedChanges) {
                                     setConfirmDialog({
@@ -229,10 +230,11 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                     onBack();
                                 }
                             }}
-                            className="text-neutral-300 hover:text-neutral-50 flex items-center gap-2"
+                            variant="ghost"
+                            className="text-neutral-300 hover:text-neutral-50 flex items-center gap-2 h-auto p-0"
                         >
                             ← Back to collections
-                        </button>
+                        </Button>
                         <h1 className="text-4xl font-bold text-neutral-50 mt-2">{filename}</h1>
                         <p className="text-neutral-400 mt-1">
                             {collection?.passwords?.length || 0} {collection?.passwords?.length === 1 ? 'password' : 'passwords'}
@@ -240,23 +242,24 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     </div>
                     <div className="flex items-center gap-3">
                         {hasUnsavedChanges && (
-                            <button
+                            <Button
                                 onClick={handleSave}
                                 disabled={saving}
-                                className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                                className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                             >
                                 {saving ? 'Saving...' : 'Save'}
-                            </button>
+                            </Button>
                         )}
 
                         {/* Three dots menu */}
                         <div className="relative">
-                            <button
+                            <Button
                                 onClick={() => setShowDropdown(!showDropdown)}
-                                className="px-3 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium transition-colors"
+                                variant="secondary"
+                                className="px-3 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium"
                             >
                                 ⋯
-                            </button>
+                            </Button>
 
                             {showDropdown && (
                                 <>
@@ -268,15 +271,16 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
                                     {/* Dropdown menu */}
                                     <div className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-20">
-                                        <button
+                                        <Button
                                             onClick={() => {
                                                 setShowDropdown(false);
                                                 handleDeleteCollection();
                                             }}
-                                            className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/30 rounded-lg transition-colors flex items-center gap-2"
+                                            variant="ghost"
+                                            className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/30 rounded-lg flex items-center gap-2 h-auto"
                                         >
                                             <span>Delete Collection</span>
-                                        </button>
+                                        </Button>
                                     </div>
                                 </>
                             )}
@@ -292,13 +296,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
                 {/* Add Password Button */}
                 <div className="mb-6">
-                    <button
+                    <Button
                         onClick={handleNewPassword}
-                        className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                        className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
                     >
                         <Plus className="w-5 h-5" />
                         Add New Password
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 gap-8">
@@ -326,26 +330,28 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                     <div className="flex items-center justify-between mb-3">
                                         <h3 className="text-sm font-medium text-neutral-300">Filter by tags:</h3>
                                         {selectedTags.size > 0 && (
-                                            <button
+                                            <Button
                                                 onClick={clearTagFilters}
-                                                className="text-xs text-neutral-400 hover:text-neutral-50 underline"
+                                                variant="ghost"
+                                                className="text-xs text-neutral-400 hover:text-neutral-50 underline h-auto p-0"
                                             >
                                                 Clear filters
-                                            </button>
+                                            </Button>
                                         )}
                                     </div>
                                     <div className="flex flex-wrap gap-2">
                                         {allTags.map((tag) => (
-                                            <button
+                                            <Button
                                                 key={tag}
                                                 onClick={() => toggleTagFilter(tag)}
-                                                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${selectedTags.has(tag)
-                                                    ? 'bg-neutral-50 text-neutral-950 shadow-lg scale-105'
+                                                variant={selectedTags.has(tag) ? 'default' : 'secondary'}
+                                                className={`px-3 py-1.5 rounded-full text-sm font-medium h-auto ${selectedTags.has(tag)
+                                                    ? 'bg-neutral-50 text-neutral-950 shadow-lg'
                                                     : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 border border-neutral-700'
                                                     }`}
                                             >
                                                 {tag}
-                                            </button>
+                                            </Button>
                                         ))}
                                     </div>
                                     {selectedTags.size > 0 && (
@@ -386,18 +392,21 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                                     )}
                                                 </div>
                                                 <div className="flex gap-2">
-                                                    <button
+                                                    <Button
                                                         onClick={() => handleEditPassword(password)}
-                                                        className="px-4 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-sm rounded-lg font-medium transition-all"
+                                                        size="sm"
+                                                        className="px-4 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-sm rounded-lg font-medium"
                                                     >
                                                         Edit
-                                                    </button>
-                                                    <button
+                                                    </Button>
+                                                    <Button
                                                         onClick={() => handleDeletePassword(password.id)}
-                                                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-neutral-50 text-sm rounded-lg font-medium transition-all"
+                                                        variant="destructive"
+                                                        size="sm"
+                                                        className="px-4 py-2 text-sm rounded-lg font-medium"
                                                     >
                                                         Delete
-                                                    </button>
+                                                    </Button>
                                                 </div>
                                             </div>
 
@@ -408,12 +417,14 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                                         <div className="text-xs text-neutral-400 mb-1">Login</div>
                                                         <div className="text-neutral-50 font-medium">{password.login || 'N/A'}</div>
                                                     </div>
-                                                    <button
+                                                    <Button
                                                         onClick={() => copyToClipboard(password.login, 'Login')}
-                                                        className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded transition-all text-sm"
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded text-sm h-auto"
                                                     >
                                                         Copy
-                                                    </button>
+                                                    </Button>
                                                 </div>
 
                                                 {/* Password */}
@@ -425,18 +436,22 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                                         </code>
                                                     </div>
                                                     <div className="flex gap-2">
-                                                        <button
+                                                        <Button
                                                             onClick={() => toggleShowPassword(password.id)}
-                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded transition-all text-sm"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded text-sm h-auto"
                                                         >
                                                             {showPassword.has(password.id) ? 'Hide' : 'Show'}
-                                                        </button>
-                                                        <button
+                                                        </Button>
+                                                        <Button
                                                             onClick={() => copyToClipboard(password.password, 'Password')}
-                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded transition-all text-sm"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded text-sm h-auto"
                                                         >
                                                             Copy
-                                                        </button>
+                                                        </Button>
                                                     </div>
                                                 </div>
 
