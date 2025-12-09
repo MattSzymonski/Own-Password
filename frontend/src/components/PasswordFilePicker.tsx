@@ -81,7 +81,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                 <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-semibold text-neutral-50">
-                            Your Password Collections
+                            Password Collections
                         </h2>
                         <Button
                             onClick={onCreateNew}
@@ -114,7 +114,6 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                                                 </h3>
                                             </div>
                                             <div className="flex gap-6 text-sm text-neutral-400">
-                                                <span>Size: {formatFileSize(file.size)}</span>
                                                 <span>Modified: {formatDate(file.modified)}</span>
                                             </div>
                                         </div>

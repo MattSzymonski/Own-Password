@@ -13,7 +13,7 @@ type ButtonProps = WithAsChild<
 >;
 
 function Button({
-  hoverScale = 1.05,
+  hoverScale = 1,
   tapScale = 0.95,
   asChild = false,
   ...props
@@ -23,7 +23,7 @@ function Button({
   return (
     <Component
       whileTap={{ scale: tapScale }}
-      whileHover={{ scale: hoverScale }}
+      whileHover={{ scale: hoverScale, opacity: 0.8 }}
       {...props}
     />
   );
