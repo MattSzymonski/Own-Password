@@ -61,16 +61,24 @@ export default function MainPage() {
     };
 
     const handleAppUnlocked = (password: string) => {
-        setAppPassword(password);
-        setAppUnlocked(true);
+        setIsTransitioning(true);
+        setTimeout(() => {
+            setAppPassword(password);
+            setAppUnlocked(true);
+            setIsTransitioning(false);
+        }, 250);
     };
 
     const handleLockApp = () => {
-        setAppPassword('');
-        setAppUnlocked(false);
-        setSelectedFile(null);
-        setCollection(null);
-        setMasterPassword('');
+        setIsTransitioning(true);
+        setTimeout(() => {
+            setAppPassword('');
+            setAppUnlocked(false);
+            setSelectedFile(null);
+            setCollection(null);
+            setMasterPassword('');
+            setIsTransitioning(false);
+        }, 250);
     };
 
     // Show app unlock dialog if app password is required and not yet unlocked
@@ -87,6 +95,19 @@ export default function MainPage() {
                         className="w-20 opacity-30"
                     />
                 </div>
+
+                {/* Fade overlay */}
+                <AnimatePresence>
+                    {isTransitioning && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            className="fixed inset-0 bg-black z-[9999] pointer-events-none"
+                        />
+                    )}
+                </AnimatePresence>
             </div>
         );
     }
