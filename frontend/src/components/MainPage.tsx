@@ -32,8 +32,9 @@ export default function MainPage() {
             setCollection(col);
             setMasterPassword(password);
             setSelectedFile(filename);
-        }, 300);
-        setTimeout(() => setIsTransitioning(false), 600);
+            setUnlockDialogOpen(false);
+        }, 250);
+        setTimeout(() => setIsTransitioning(false), 500);
     };
 
     const handleBack = () => {
@@ -42,19 +43,19 @@ export default function MainPage() {
             setSelectedFile(null);
             setCollection(null);
             setMasterPassword('');
-        }, 300);
-        setTimeout(() => setIsTransitioning(false), 600);
+            setIsTransitioning(false);
+        }, 250);
     };
 
     return (
-        <div className="bg-black min-h-screen">
+        <div className="bg-black min-h-screen relative">
             <AnimatePresence mode="wait">
                 {selectedFile && collection && masterPassword ? (
                     <motion.div
                         key="editor"
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: isTransitioning ? 0 : 1 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
                     >
                         <PasswordFileEditor
                             filename={selectedFile}
@@ -64,12 +65,7 @@ export default function MainPage() {
                         />
                     </motion.div>
                 ) : (
-                    <motion.div
-                        key="picker"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: isTransitioning ? 0 : 1 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    >
+                    <div key="picker">
                         <PasswordFilePicker onFileSelect={handleFileSelect} onCreateNew={handleCreateNew} />
                         <UnlockDialog
                             open={unlockDialogOpen}
@@ -78,7 +74,20 @@ export default function MainPage() {
                             isNewFile={isNewFile}
                             onUnlocked={handleUnlocked}
                         />
-                    </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Fade overlay */}
+            <AnimatePresence>
+                {isTransitioning && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                        className="fixed inset-0 bg-black z-[9999] pointer-events-none"
+                    />
                 )}
             </AnimatePresence>
         </div>

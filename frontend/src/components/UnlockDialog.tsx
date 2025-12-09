@@ -58,7 +58,6 @@ export default function UnlockDialog({ open, onOpenChange, collectionName: initi
                 await savePasswordFile(collectionName, encryptedData);
 
                 onUnlocked(newCol, masterPassword, collectionName);
-                onOpenChange(false);
             } catch (err) {
                 setError('Failed to create password file');
                 console.error(err);
@@ -73,7 +72,6 @@ export default function UnlockDialog({ open, onOpenChange, collectionName: initi
                 const fileData = await downloadPasswordFile(collectionName);
                 const db = await decodePasswoodFile(fileData, masterPassword);
                 onUnlocked(db, masterPassword, collectionName);
-                onOpenChange(false);
             } catch (err) {
                 setError('Failed to decrypt: incorrect password or corrupted file');
                 console.error(err);
