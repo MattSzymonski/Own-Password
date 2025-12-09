@@ -1,5 +1,5 @@
 import { Plus } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import type { PasswoodPassword, Tag } from '../cryptor';
 import PasswordEntry from './PasswordEntry';
@@ -122,21 +122,29 @@ export default function PasswordList({
                         ref={scrollContainerRef}
                         className="space-y-3 overflow-y-auto pr-2 h-full"
                     >
-                        {passwords.map((password, index) => (
-                            <motion.div
-                                key={password.id}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.2, delay: 0.3 + index * 0.05 }}
-                            >
-                                <PasswordEntry
-                                    password={password}
-                                    availableTags={availableTags}
-                                    onEdit={onEdit}
-                                    onDelete={onDelete}
-                                />
-                            </motion.div>
-                        ))}
+                        <AnimatePresence mode="popLayout">
+                            {passwords.map((password) => (
+                                <motion.div
+                                    key={password.id}
+                                    layout
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    transition={{
+                                        layout: { duration: 0.3, ease: "easeInOut" },
+                                        opacity: { duration: 0.2 },
+                                        scale: { duration: 0.2 }
+                                    }}
+                                >
+                                    <PasswordEntry
+                                        password={password}
+                                        availableTags={availableTags}
+                                        onEdit={onEdit}
+                                        onDelete={onDelete}
+                                    />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </div>
 
                     {/* Bottom gradient overlay */}
