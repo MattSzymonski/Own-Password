@@ -17,7 +17,8 @@ export type {
     PasswoodDatabase, // Alias for backward compatibility
     PasswoodHeader,
     EncryptedPayload,
-    PasswoodFileData
+    PasswoodFileData,
+    Tag
 } from './types';
 
 export {

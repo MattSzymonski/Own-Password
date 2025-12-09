@@ -1,40 +1,43 @@
-import { Button } from '@/components/animate-ui/components/buttons/button';
+import type { Tag } from '../cryptor';
 
 interface TagFilterProps {
-    allTags: string[];
+    availableTags: Tag[];
     selectedTags: Set<string>;
-    onToggleTag: (tag: string) => void;
+    onToggleTag: (tagName: string) => void;
     onClearFilters: () => void;
     filteredCount: number;
 }
 
 export default function TagFilter({
-    allTags,
+    availableTags,
     selectedTags,
     onToggleTag,
     onClearFilters,
     filteredCount
 }: TagFilterProps) {
-    if (allTags.length === 0) {
+    if (availableTags.length === 0) {
         return null;
     }
 
     return (
         <div className="mb-6 flex-shrink-0">
             <div className="flex flex-wrap gap-2">
-                {allTags.map((tag) => (
-                    <Button
-                        key={tag}
-                        onClick={() => onToggleTag(tag)}
-                        variant={selectedTags.has(tag) ? 'default' : 'secondary'}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium h-auto ${selectedTags.has(tag)
-                            ? 'bg-neutral-50 text-neutral-950 shadow-lg hover:bg-neutral-200'
-                            : 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700 border border-neutral-700'
-                            }`}
-                    >
-                        {tag}
-                    </Button>
-                ))}
+                {availableTags.map((tag) => {
+                    const isSelected = selectedTags.has(tag.name);
+                    return (
+                        <button
+                            key={tag.id}
+                            onClick={() => onToggleTag(tag.name)}
+                            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${isSelected
+                                    ? 'text-white shadow-lg scale-105'
+                                    : 'text-white opacity-60 hover:opacity-100'
+                                }`}
+                            style={{ backgroundColor: tag.color }}
+                        >
+                            {tag.name}
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { savePasswordFile, deletePasswordFile } from '../api/passwordApi';
 import { encodePasswoodFile } from '../cryptor';
-import type { PasswoodCollection, PasswoodPassword } from '../cryptor';
+import type { PasswoodCollection, PasswoodPassword, Tag } from '../cryptor';
 import EntryDialog from './EntryDialog';
 import ConfirmDialog from './ConfirmDialog';
+import TagsDialog from './TagsDialog';
 import EditorHeader from './EditorHeader';
 import PasswordList from './PasswordList';
 import {
@@ -27,11 +28,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const [error, setError] = useState<string | null>(null);
     const [editingPassword, setEditingPassword] = useState<PasswoodPassword | null>(null);
     const [showEntryDialog, setShowEntryDialog] = useState(false);
+    const [showTagsDialog, setShowTagsDialog] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
     const [saving, setSaving] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [showSavePopup, setShowSavePopup] = useState(false);
+    const [showAddPopup, setShowAddPopup] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean;
         title: string;
@@ -119,6 +122,10 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                 data.tags
             );
             setCollection(addPassword(collection, password));
+
+            // Show success popup
+            setShowAddPopup(true);
+            setTimeout(() => setShowAddPopup(false), 2000);
         }
 
         setHasUnsavedChanges(true);
@@ -149,6 +156,33 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         setShowEntryDialog(true);
     };
 
+    const handleManageTags = () => {
+        setShowTagsDialog(true);
+    };
+
+    const handleSaveTags = (tags: Tag[], renamedTags: { oldName: string; newName: string }[], deletedTagNames: string[]) => {
+        let updatedPasswords = [...collection.passwords];
+
+        // Update passwords for renamed tags
+        renamedTags.forEach(({ oldName, newName }) => {
+            updatedPasswords = updatedPasswords.map(password => ({
+                ...password,
+                tags: password.tags?.map(tag => tag === oldName ? newName : tag)
+            }));
+        });
+
+        // Remove deleted tags from passwords
+        deletedTagNames.forEach(deletedName => {
+            updatedPasswords = updatedPasswords.map(password => ({
+                ...password,
+                tags: password.tags?.filter(tag => tag !== deletedName)
+            }));
+        });
+
+        setCollection({ ...collection, tags, passwords: updatedPasswords });
+        setHasUnsavedChanges(true);
+    };
+
     const toggleTagFilter = (tag: string) => {
         setSelectedTags(prev => {
             const newSet = new Set(prev);
@@ -165,12 +199,16 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         setSelectedTags(new Set());
     };
 
-    // Get all unique tags from collection
+    // Get all unique tag names from passwords
     const allTags = Array.from(
         new Set(
             collection?.passwords?.flatMap(password => password.tags || []) || []
         )
     ).sort();
+
+    // Get Tag objects that have at least one password entry (preserve user's order)
+    const availableTagsForFilter = (collection.tags || [])
+        .filter(tag => allTags.includes(tag.name));
 
     const filteredPasswords = collection?.passwords?.filter(password => {
         // Text search
@@ -212,6 +250,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     onBack={handleBackClick}
                     onSave={handleSave}
                     onDeleteCollection={handleDeleteCollection}
+                    onManageTags={handleManageTags}
                 />
 
                 {error && (
@@ -225,6 +264,8 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                         passwords={filteredPasswords}
                         searchQuery={searchQuery}
                         allTags={allTags}
+                        availableTags={collection.tags || []}
+                        availableTagsForFilter={availableTagsForFilter}
                         selectedTags={selectedTags}
                         onSearchChange={setSearchQuery}
                         onToggleTag={toggleTagFilter}
@@ -237,11 +278,15 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
                 {/* Save Success Popup */}
                 {showSavePopup && (
-                    <div
-                        className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg transition-opacity duration-300 z-[9999]"
-                        style={{ opacity: showSavePopup ? 1 : 0 }}
-                    >
+                    <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
                         Password file saved successfully!
+                    </div>
+                )}
+
+                {/* Add Password Success Popup */}
+                {showAddPopup && (
+                    <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
+                        Password added successfully!
                     </div>
                 )}
 
@@ -249,7 +294,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     open={showEntryDialog}
                     onOpenChange={setShowEntryDialog}
                     password={editingPassword}
-                    existingTags={allTags}
+                    availableTags={collection.tags || []}
                     onSave={handleSaveEntry}
                 />
 
@@ -260,6 +305,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     message={confirmDialog.message}
                     onConfirm={confirmDialog.onConfirm}
                     danger={confirmDialog.danger}
+                />
+
+                <TagsDialog
+                    open={showTagsDialog}
+                    onOpenChange={setShowTagsDialog}
+                    tags={collection.tags || []}
+                    onSave={handleSaveTags}
                 />
             </div>
         </div>

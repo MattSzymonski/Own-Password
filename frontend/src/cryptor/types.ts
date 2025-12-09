@@ -21,11 +21,18 @@ export interface CustomField {
     type?: 'text' | 'password' | 'url' | 'email';
 }
 
+export interface Tag {
+    id: string;
+    name: string;
+    color: string;
+}
+
 export interface PasswoodCollection {
     version: string;
     created: string;
     modified: string;
     passwords: PasswoodPassword[];
+    tags?: Tag[];
 }
 
 // Backward compatibility alias

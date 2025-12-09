@@ -1,6 +1,6 @@
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
-import type { PasswoodPassword } from '../cryptor';
+import type { PasswoodPassword, Tag } from '../cryptor';
 import PasswordEntry from './PasswordEntry';
 import TagFilter from './TagFilter';
 import { useState, useRef, useEffect } from 'react';
@@ -9,6 +9,8 @@ interface PasswordListProps {
     passwords: PasswoodPassword[];
     searchQuery: string;
     allTags: string[];
+    availableTags: Tag[];
+    availableTagsForFilter: Tag[];
     selectedTags: Set<string>;
     onSearchChange: (query: string) => void;
     onToggleTag: (tag: string) => void;
@@ -22,6 +24,8 @@ export default function PasswordList({
     passwords,
     searchQuery,
     allTags,
+    availableTags,
+    availableTagsForFilter,
     selectedTags,
     onSearchChange,
     onToggleTag,
@@ -95,7 +99,7 @@ export default function PasswordList({
 
             {/* Tags Filter */}
             <TagFilter
-                allTags={allTags}
+                availableTags={availableTagsForFilter}
                 selectedTags={selectedTags}
                 onToggleTag={onToggleTag}
                 onClearFilters={onClearFilters}
@@ -124,6 +128,7 @@ export default function PasswordList({
                             <PasswordEntry
                                 key={password.id}
                                 password={password}
+                                availableTags={availableTags}
                                 onEdit={onEdit}
                                 onDelete={onDelete}
                             />

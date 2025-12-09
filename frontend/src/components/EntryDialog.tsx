@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import type { PasswoodPassword } from '../cryptor';
+import type { PasswoodPassword, Tag } from '../cryptor';
 import { generatePassword, calculatePasswordStrength } from '../cryptor/utils';
 import { Button } from '@/components/animate-ui/components/buttons/button';
+import TagPicker from './TagPicker';
 
 interface EntryDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     password?: PasswoodPassword | null;
-    existingTags: string[];
+    availableTags: Tag[];
     onSave: (data: {
         title: string;
         login: string;
@@ -19,28 +20,31 @@ interface EntryDialogProps {
     }) => void;
 }
 
-export default function EntryDialog({ open, onOpenChange, password, existingTags, onSave }: EntryDialogProps) {
+export default function EntryDialog({ open, onOpenChange, password, availableTags, onSave }: EntryDialogProps) {
     const [formData, setFormData] = useState({
         title: '',
         login: '',
         password: '',
         url: '',
         notes: '',
-        tags: ''
+        tagIds: [] as string[]
     });
     const [error, setError] = useState<string | null>(null);
-    const [showTagSuggestions, setShowTagSuggestions] = useState(false);
-    const [tagInput, setTagInput] = useState('');
 
     useEffect(() => {
         if (password) {
+            // Convert tag names to tag IDs
+            const tagIds = password.tags
+                ?.map(tagName => availableTags.find(t => t.name === tagName)?.id)
+                .filter((id): id is string => id !== undefined) || [];
+
             setFormData({
                 title: password.title,
                 login: password.login,
                 password: password.password,
                 url: password.url || '',
                 notes: password.notes || '',
-                tags: password.tags?.join(', ') || ''
+                tagIds
             });
         } else {
             setFormData({
@@ -49,11 +53,11 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
                 password: '',
                 url: '',
                 notes: '',
-                tags: ''
+                tagIds: []
             });
         }
         setError(null);
-    }, [password, open]);
+    }, [password, open, availableTags]);
 
     const handleGeneratePassword = () => {
         const newPassword = generatePassword(16);
@@ -66,10 +70,10 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
             return;
         }
 
-        const tags = formData.tags
-            .split(',')
-            .map(t => t.trim())
-            .filter(t => t.length > 0);
+        // Convert tag IDs back to tag names
+        const tags = formData.tagIds
+            .map(id => availableTags.find(t => t.id === id)?.name)
+            .filter((name): name is string => name !== undefined);
 
         onSave({
             title: formData.title,
@@ -83,33 +87,11 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
         onOpenChange(false);
     };
 
-    const handleTagInputChange = (value: string) => {
-        setFormData(prev => ({ ...prev, tags: value }));
-        const lastCommaIndex = value.lastIndexOf(',');
-        const currentTag = value.slice(lastCommaIndex + 1).trim();
-        setTagInput(currentTag);
-        setShowTagSuggestions(currentTag.length > 0);
-    };
-
-    const handleTagSelect = (tag: string) => {
-        const lastCommaIndex = formData.tags.lastIndexOf(',');
-        const beforeLastTag = lastCommaIndex >= 0 ? formData.tags.slice(0, lastCommaIndex + 1) + ' ' : '';
-        const newValue = beforeLastTag + tag + ', ';
-        setFormData(prev => ({ ...prev, tags: newValue }));
-        setShowTagSuggestions(false);
-        setTagInput('');
-    };
-
-    const filteredSuggestions = existingTags.filter(tag =>
-        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
-        !formData.tags.split(',').map(t => t.trim()).includes(tag)
-    );
-
     return (
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800 max-w-md w-full max-h-[90vh] overflow-y-auto z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
+                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800 max-w-lg w-full max-h-[90vh] overflow-y-auto z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
                     <Dialog.Title className="text-2xl font-semibold text-neutral-50 mb-6">
                         {password ? 'Edit Password' : 'Add New Password'}
                     </Dialog.Title>
@@ -213,34 +195,13 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
                             />
                         </div>
 
-                        <div className="relative">
+                        <div>
                             <label className="block text-neutral-300 mb-2 text-sm">Tags</label>
-                            <input
-                                type="text"
-                                placeholder="work, personal, banking"
-                                value={formData.tags}
-                                onChange={(e) => handleTagInputChange(e.target.value)}
-                                onFocus={() => setShowTagSuggestions(tagInput.length > 0)}
-                                onBlur={() => setTimeout(() => setShowTagSuggestions(false), 200)}
-                                className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
+                            <TagPicker
+                                availableTags={availableTags}
+                                selectedTagIds={formData.tagIds}
+                                onTagsChange={(tagIds) => setFormData(prev => ({ ...prev, tagIds }))}
                             />
-                            <p className="text-xs text-neutral-400 mt-1">Separate tags with commas. Type to see existing tags or create new ones.</p>
-
-                            {showTagSuggestions && filteredSuggestions.length > 0 && (
-                                <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl max-h-48 overflow-y-auto">
-                                    {filteredSuggestions.map((tag) => (
-                                        <Button
-                                            key={tag}
-                                            type="button"
-                                            onClick={() => handleTagSelect(tag)}
-                                            variant="ghost"
-                                            className="w-full text-left px-4 py-2 hover:bg-neutral-800 text-neutral-50 first:rounded-t-lg last:rounded-b-lg h-auto justify-start"
-                                        >
-                                            <span className="font-medium">{tag}</span>
-                                        </Button>
-                                    ))}
-                                </div>
-                            )}
                         </div>
 
                         <div className="flex gap-3 pt-4">

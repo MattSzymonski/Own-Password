@@ -11,16 +11,17 @@ interface EditorHeaderProps {
     onBack: () => void;
     onSave: () => void;
     onDeleteCollection: () => void;
+    onManageTags: () => void;
 }
 
 export default function EditorHeader({
     filename,
-    passwordCount,
     hasUnsavedChanges,
     saving,
     onBack,
     onSave,
-    onDeleteCollection
+    onDeleteCollection,
+    onManageTags
 }: EditorHeaderProps) {
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -73,10 +74,20 @@ export default function EditorHeader({
                                         <Button
                                             onClick={() => {
                                                 setShowDropdown(false);
+                                                onManageTags();
+                                            }}
+                                            variant="ghost"
+                                            className="w-full px-4 py-2.5 text-left text-neutral-400 hover:text-neutral-50 hover:bg-transparent rounded-t-lg flex items-center gap-2 h-auto justify-start"
+                                        >
+                                            <span>Manage Tags</span>
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setShowDropdown(false);
                                                 onDeleteCollection();
                                             }}
                                             variant="ghost"
-                                            className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/30 rounded-lg flex items-center gap-2 h-auto"
+                                            className="w-full px-4 py-2.5 text-left text-red-400 hover:text-red-300 hover:bg-transparent rounded-b-lg flex items-center gap-2 h-auto justify-start"
                                         >
                                             <span>Delete Collection</span>
                                         </Button>

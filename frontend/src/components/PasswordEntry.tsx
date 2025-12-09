@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import { Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import type { PasswoodPassword } from '../cryptor';
+import type { PasswoodPassword, Tag } from '../cryptor';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import { CopyButton } from '@/components/animate-ui/components/buttons/copy';
 
 interface PasswordEntryProps {
     password: PasswoodPassword;
+    availableTags: Tag[];
     onEdit: (password: PasswoodPassword) => void;
     onDelete: (id: string) => void;
 }
 
-export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEntryProps) {
+export default function PasswordEntry({ password, availableTags, onEdit, onDelete }: PasswordEntryProps) {
     const [showPassword, setShowPassword] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -25,6 +26,11 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
         const minutes = String(date.getMinutes()).padStart(2, '0');
         return `${day}.${month}.${year} ${hours}:${minutes}`;
     };
+
+    // Map tag names to Tag objects with colors
+    const passwordTags = password.tags
+        ?.map(tagName => availableTags.find(t => t.name === tagName))
+        .filter((tag): tag is Tag => tag !== undefined) || [];
 
     return (
         <div className="bg-neutral-900 border border-neutral-800 rounded-xl">
@@ -175,16 +181,17 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
                             )}
 
                             {/* Tags */}
-                            {password.tags && password.tags.length > 0 && (
+                            {passwordTags.length > 0 && (
                                 <div className="py-2">
                                     <div className="text-xs text-neutral-400 mb-2">Tags</div>
                                     <div className="flex flex-wrap gap-2">
-                                        {password.tags.map((tag, idx) => (
+                                        {passwordTags.map((tag) => (
                                             <span
-                                                key={idx}
-                                                className="px-3 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full border border-neutral-700"
+                                                key={tag.id}
+                                                className="px-3 py-1 text-white text-xs rounded-full font-medium"
+                                                style={{ backgroundColor: tag.color }}
                                             >
-                                                {tag}
+                                                {tag.name}
                                             </span>
                                         ))}
                                     </div>
