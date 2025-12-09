@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import type { PasswoodPassword } from '../cryptor';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import { CopyButton } from '@/components/animate-ui/components/buttons/copy';
@@ -13,12 +14,23 @@ interface PasswordEntryProps {
 export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEntryProps) {
     const [showPassword, setShowPassword] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
 
     return (
         <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
-            <div className="flex justify-between items-start mb-4">
-                <div className="flex-1">
-                    <h4 className="text-xl font-semibold text-neutral-50 mb-2">
+            {/* Header row with expand button, title, and options */}
+            <div className="flex items-center gap-3">
+                <Button
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    variant="ghost"
+                    size="icon-sm"
+                    className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 flex-shrink-0"
+                >
+                    {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                </Button>
+
+                <div className="flex-1 min-w-0">
+                    <h4 className="text-xl font-semibold text-neutral-50">
                         {password.title}
                     </h4>
                     {password.url && (
@@ -26,13 +38,14 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
                             href={password.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-400 hover:text-blue-300 text-sm truncate block mb-3"
+                            className="text-blue-400 hover:text-blue-300 text-sm truncate block mt-1"
                         >
                             {password.url}
                         </a>
                     )}
                 </div>
-                <div className="relative">
+
+                <div className="relative flex-shrink-0">
                     <Button
                         onClick={() => setOpenDropdown(!openDropdown)}
                         variant="ghost"
@@ -75,75 +88,91 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
                 </div>
             </div>
 
-            <div className="space-y-3">
-                {/* Login */}
-                {password.login && (
-                    <div className="flex items-center justify-between py-2">
-                        <div className="flex-1">
-                            <div className="text-xs text-neutral-400 mb-1">Login</div>
-                            <div className="text-neutral-50 font-medium">{password.login}</div>
+            {/* Expanded section */}
+            <AnimatePresence>
+                {isExpanded && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.15, ease: 'easeInOut' }}
+                        className="overflow-hidden"
+                    >
+                        <div className="mt-4 pt-4 border-t border-neutral-800 space-y-3">
+                            {/* Login */}
+                            {password.login && (
+                                <div className="flex items-center justify-between py-2">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="text-xs text-neutral-400 mb-1">Login</div>
+                                        <div className="text-neutral-50 font-medium truncate">{password.login}</div>
+                                    </div>
+                                    <CopyButton
+                                        content={password.login}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 flex-shrink-0 ml-3"
+                                    />
+                                </div>
+                            )}
+
+                            {/* Password */}
+                            <div className="flex items-center justify-between py-2">
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs text-neutral-400 mb-1">Password</div>
+                                    <code className="text-neutral-50 font-mono text-sm block truncate">
+                                        {showPassword ? password.password : '••••••••••••'}
+                                    </code>
+                                </div>
+                                <div className="flex gap-2 flex-shrink-0 ml-3">
+                                    <Button
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        variant="ghost"
+                                        size="icon-sm"
+                                        className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
+                                    >
+                                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                    </Button>
+                                    <CopyButton
+                                        content={password.password}
+                                        variant="ghost"
+                                        size="sm"
+                                        className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Notes */}
+                            {password.notes && (
+                                <div className="py-2">
+                                    <div className="text-xs text-neutral-400 mb-1">Notes</div>
+                                    <p className="text-neutral-300 text-sm">{password.notes}</p>
+                                </div>
+                            )}
+
+                            {/* Tags */}
+                            {password.tags && password.tags.length > 0 && (
+                                <div className="py-2">
+                                    <div className="text-xs text-neutral-400 mb-2">Tags</div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {password.tags.map((tag, idx) => (
+                                            <span
+                                                key={idx}
+                                                className="px-3 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full border border-neutral-700"
+                                            >
+                                                {tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="text-xs text-neutral-500 pt-2">
+                                Modified: {new Date(password.modified).toLocaleString()}
+                            </div>
                         </div>
-                        <CopyButton
-                            content={password.login}
-                            variant="ghost"
-                            size="sm"
-                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
-                        />
-                    </div>
+                    </motion.div>
                 )}
-
-                {/* Password */}
-                <div className="flex items-center justify-between py-2 border-t border-neutral-800">
-                    <div className="flex-1">
-                        <div className="text-xs text-neutral-400 mb-1">Password</div>
-                        <code className="text-neutral-50 font-mono text-sm">
-                            {showPassword ? password.password : '••••••••••••'}
-                        </code>
-                    </div>
-                    <div className="flex gap-2">
-                        <Button
-                            onClick={() => setShowPassword(!showPassword)}
-                            variant="ghost"
-                            size="icon-sm"
-                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
-                        >
-                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                        </Button>
-                        <CopyButton
-                            content={password.password}
-                            variant="ghost"
-                            size="sm"
-                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
-                        />
-                    </div>
-                </div>
-
-                {/* Notes */}
-                {password.notes && (
-                    <div className="py-2 border-t border-neutral-800">
-                        <div className="text-xs text-neutral-400 mb-1">Notes</div>
-                        <p className="text-neutral-300 text-sm">{password.notes}</p>
-                    </div>
-                )}
-
-                {/* Tags */}
-                {password.tags && password.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-2 border-t border-neutral-800">
-                        {password.tags.map((tag, idx) => (
-                            <span
-                                key={idx}
-                                className="px-3 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full border border-neutral-700"
-                            >
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-                )}
-
-                <div className="text-xs text-neutral-500 pt-2 border-t border-neutral-800">
-                    Modified: {new Date(password.modified).toLocaleString()}
-                </div>
-            </div>
+            </AnimatePresence>
         </div>
     );
 }
