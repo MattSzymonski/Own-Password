@@ -203,7 +203,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
     return (
         <div className="h-screen bg-neutral-950 p-8 flex flex-col overflow-hidden">
-            <div className="max-w-7xl mx-auto flex flex-col h-full w-full">
+            <div className="max-w-2xl mx-auto flex flex-col h-full w-full">
                 <EditorHeader
                     filename={filename}
                     passwordCount={collection?.passwords?.length || 0}
