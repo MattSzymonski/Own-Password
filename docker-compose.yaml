@@ -1,6 +1,6 @@
 services:
-  passwood:
-    container_name: passwood
+  own-password:
+    container_name: own-password
     domainname: campfire-on-the-wall
     restart: unless-stopped
     build:
@@ -10,7 +10,7 @@ services:
       - 3010:3010
     environment:
       - NODE_ENV=production
-      - FRONTEND_URL=https://passwood.campfire-on-the-wall.com
+      - FRONTEND_URL=https://own-password.campfire-on-the-wall.com
       - VITE_TEST_VARIABLE='Im a test variable'
     volumes:
       # Password files data

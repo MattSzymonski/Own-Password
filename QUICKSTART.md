@@ -1,8 +1,8 @@
-# Passwood - Quick Start Guide
+# OwnPassword - Quick Start Guide
 
-## What is Passwood?
+## What is OwnPassword?
 
-Passwood is a self-hosted password manager with military-grade encryption. It stores your passwords in encrypted `.passwood` files that can only be decrypted with your master password.
+OwnPassword is a self-hosted password manager with military-grade encryption. It stores your passwords in encrypted `.ownpwd` files that can only be decrypted with your master password.
 
 ## Key Features
 

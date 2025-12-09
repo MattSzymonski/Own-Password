@@ -6,7 +6,7 @@
 </p>
 
 
-**Modern, minimal and selfhosted passwords manager** - Keep securely ecrypted password files on your server and access them wherever you want through the browser. No installation required.
+**Modern, minimal and selfhosted password manager** - Keep securely encrypted password files on your server and access them wherever you want through the browser. No installation required.
 
 # Features
 - Military-grade and well-documented password encryption format
@@ -33,7 +33,7 @@
 
 # Deployment
 
-Passwood is meant to run as self-hosted Docker container.
+OwnPassword is meant to run as self-hosted Docker container.
 
 ## Quick Start
 
@@ -94,7 +94,7 @@ Passwood is meant to run as self-hosted Docker container.
 ## Project Structure
 
 ```
-passwood/
+own-password/
 ├── backend/                    # Backend API
 │   ├── src/
 │   │   ├── server.ts          # Express server setup

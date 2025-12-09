@@ -69,7 +69,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
                     <h1 className="text-5xl font-bold text-neutral-50 mb-4">
-                        Passwood
+                        OwnPassword
                     </h1>
                     <p className="text-neutral-300 text-lg">
                         Secure password manager with encrypted storage

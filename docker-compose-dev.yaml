@@ -1,6 +1,6 @@
 services:
-  passwood:
-    container_name: passwood_DEV
+  own-password:
+    container_name: own-password_DEV
     domainname: campfire-on-the-wall
     restart: unless-stopped
     build:
