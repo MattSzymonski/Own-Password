@@ -84,7 +84,7 @@ export default function PasswordList({
             </div>
 
             {/* Search Bar */}
-            <div className="mb-3 flex-shrink-0">
+            <div className="mb-4 flex-shrink-0">
                 <input
                     type="text"
                     placeholder="Search passwords..."
@@ -100,6 +100,9 @@ export default function PasswordList({
                 selectedTags={selectedTags}
                 onToggleTag={onToggleTag}
             />
+
+            {/* Separator line */}
+            <div className="h-px bg-neutral-800 my-4 flex-shrink-0" />
 
             {passwords.length === 0 ? (
                 <div className="text-center py-12 text-neutral-400 flex-1 flex items-center justify-center">

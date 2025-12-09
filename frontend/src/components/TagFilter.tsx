@@ -16,7 +16,7 @@ export default function TagFilter({
     }
 
     return (
-        <div className="mb-6 flex-shrink-0">
+        <div className="mb-3 flex-shrink-0">
             <div className="flex flex-wrap gap-2">
                 {availableTags.map((tag) => {
                     const isSelected = selectedTags.has(tag.name);
