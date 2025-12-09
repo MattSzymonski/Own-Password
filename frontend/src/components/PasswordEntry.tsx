@@ -27,18 +27,18 @@ export default function PasswordEntry({ password, availableTags, onEdit, onDelet
 
                 const rect = element.getBoundingClientRect();
                 const container = element.closest('.overflow-y-auto');
-                
+
                 if (container) {
                     const containerRect = container.getBoundingClientRect();
                     const isBottomOutside = rect.bottom > containerRect.bottom;
-                    
+
                     // Only scroll if the expanded part is outside the container
                     if (isBottomOutside) {
                         // Calculate how much we need to scroll plus 50px offset
                         const scrollOffset = rect.bottom - containerRect.bottom + 50;
-                        container.scrollBy({ 
-                            top: scrollOffset, 
-                            behavior: 'smooth' 
+                        container.scrollBy({
+                            top: scrollOffset,
+                            behavior: 'smooth'
                         });
                     }
                 }

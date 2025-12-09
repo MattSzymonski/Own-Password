@@ -111,7 +111,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         if (editingPassword) {
             // Check if anything actually changed
             const tagsChanged = JSON.stringify(editingPassword.tags?.sort() || []) !== JSON.stringify(data.tags?.sort() || []);
-            const hasChanges = 
+            const hasChanges =
                 editingPassword.title !== data.title ||
                 editingPassword.login !== data.login ||
                 editingPassword.password !== data.password ||
