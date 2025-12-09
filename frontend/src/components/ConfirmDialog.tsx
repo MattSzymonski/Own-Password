@@ -1,0 +1,74 @@
+import * as Dialog from '@radix-ui/react-dialog';
+
+interface ConfirmDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    title: string;
+    message: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onConfirm: () => void;
+    danger?: boolean;
+}
+
+export default function ConfirmDialog({
+    open,
+    onOpenChange,
+    title,
+    message,
+    confirmLabel = 'Confirm',
+    cancelLabel = 'Cancel',
+    onConfirm,
+    danger = false
+}: ConfirmDialogProps) {
+    const handleConfirm = () => {
+        onConfirm();
+        onOpenChange(false);
+    };
+
+    return (
+        <Dialog.Root open={open} onOpenChange={onOpenChange}>
+            <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50" />
+                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800 max-w-md w-full z-50">
+                    <Dialog.Title className="text-2xl font-bold text-neutral-50 mb-4">
+                        {title}
+                    </Dialog.Title>
+
+                    <Dialog.Description className="text-neutral-300 mb-6 leading-relaxed">
+                        {message}
+                    </Dialog.Description>
+
+                    <div className="flex gap-3">
+                        <button
+                            onClick={handleConfirm}
+                            className={`flex-1 px-6 py-3 rounded-lg font-medium transition-all transform hover:scale-105 ${danger
+                                    ? 'bg-red-600 hover:bg-red-700 text-neutral-50'
+                                    : 'bg-neutral-50 hover:bg-neutral-200 text-neutral-950'
+                                }`}
+                        >
+                            {confirmLabel}
+                        </button>
+                        <button
+                            onClick={() => onOpenChange(false)}
+                            className="flex-1 px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium transition-colors"
+                        >
+                            {cancelLabel}
+                        </button>
+                    </div>
+
+                    <Dialog.Close asChild>
+                        <button
+                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50 transition-colors"
+                            aria-label="Close"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                        </button>
+                    </Dialog.Close>
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
+    );
+}

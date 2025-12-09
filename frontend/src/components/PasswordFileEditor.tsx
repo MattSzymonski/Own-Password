@@ -4,6 +4,7 @@ import { savePasswordFile, deletePasswordFile } from '../api/passwordApi';
 import { encodePasswoodFile } from '../cryptor';
 import type { PasswoodCollection, PasswoodEntry } from '../cryptor';
 import EntryDialog from './EntryDialog';
+import ConfirmDialog from './ConfirmDialog';
 import {
     createEntry,
     addEntry,
@@ -32,6 +33,15 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const [showDropdown, setShowDropdown] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [showSavePopup, setShowSavePopup] = useState(false);
+    const [showCopyPopup, setShowCopyPopup] = useState(false);
+    const [copyPopupMessage, setCopyPopupMessage] = useState('');
+    const [confirmDialog, setConfirmDialog] = useState<{
+        open: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        danger?: boolean;
+    }>({ open: false, title: '', message: '', onConfirm: () => { } });
 
     // Warn before closing tab/window with unsaved changes
     useEffect(() => {
@@ -73,17 +83,21 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     };
 
     const handleDeleteCollection = async () => {
-        if (!confirm(`Are you sure you want to delete "${filename}"? This action cannot be undone.`)) {
-            return;
-        }
-
-        try {
-            await deletePasswordFile(filename);
-            onBack(); // Return to file picker
-        } catch (err) {
-            setError('Failed to delete password file');
-            console.error(err);
-        }
+        setConfirmDialog({
+            open: true,
+            title: 'Delete Collection',
+            message: `Are you sure you want to delete "${filename}"? This action cannot be undone.`,
+            danger: true,
+            onConfirm: async () => {
+                try {
+                    await deletePasswordFile(filename);
+                    onBack();
+                } catch (err) {
+                    setError('Failed to delete password file');
+                    console.error(err);
+                }
+            }
+        });
     };
 
     const handleSaveEntry = (data: {
@@ -116,10 +130,16 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     };
 
     const handleDeleteEntry = (id: string) => {
-        if (confirm('Are you sure you want to delete this entry?')) {
-            setCollection(deleteEntryUtil(collection, id));
-            setHasUnsavedChanges(true);
-        }
+        setConfirmDialog({
+            open: true,
+            title: 'Delete Entry',
+            message: 'Are you sure you want to delete this entry?',
+            danger: true,
+            onConfirm: () => {
+                setCollection(deleteEntryUtil(collection, id));
+                setHasUnsavedChanges(true);
+            }
+        });
     };
 
     const handleEditEntry = (entry: PasswoodEntry) => {
@@ -146,7 +166,9 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
     const copyToClipboard = (text: string, label: string) => {
         navigator.clipboard.writeText(text);
-        alert(`${label} copied to clipboard!`);
+        setCopyPopupMessage(`${label} copied to clipboard!`);
+        setShowCopyPopup(true);
+        setTimeout(() => setShowCopyPopup(false), 2000);
     };
 
     const toggleTagFilter = (tag: string) => {
@@ -197,9 +219,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                         <button
                             onClick={() => {
                                 if (hasUnsavedChanges) {
-                                    if (confirm('You have unsaved changes. Do you want to leave without saving?')) {
-                                        onBack();
-                                    }
+                                    setConfirmDialog({
+                                        open: true,
+                                        title: 'Unsaved Changes',
+                                        message: 'You have unsaved changes. Do you want to leave without saving?',
+                                        danger: true,
+                                        onConfirm: onBack
+                                    });
                                 } else {
                                     onBack();
                                 }
@@ -344,87 +370,100 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                             key={entry.id}
                                             className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 hover:bg-neutral-800 hover:border-neutral-600 transition-all"
                                         >
-                                            <div className="flex justify-between items-start mb-3">
+                                            <div className="flex justify-between items-start mb-4">
                                                 <div className="flex-1">
-                                                    <h4 className="text-lg font-semibold text-neutral-50 mb-1">
+                                                    <h4 className="text-xl font-semibold text-neutral-50 mb-2">
                                                         {entry.title}
                                                     </h4>
-                                                    <p className="text-neutral-300 text-sm">{entry.username}</p>
+                                                    {entry.url && (
+                                                        <a
+                                                            href={entry.url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-400 hover:text-blue-300 text-sm truncate block mb-3"
+                                                        >
+                                                            {entry.url}
+                                                        </a>
+                                                    )}
                                                 </div>
                                                 <div className="flex gap-2">
                                                     <button
                                                         onClick={() => handleEditEntry(entry)}
-                                                        className="px-3 py-1 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-sm rounded transition-colors"
+                                                        className="px-4 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-sm rounded-lg font-medium transition-all"
                                                     >
                                                         Edit
                                                     </button>
                                                     <button
                                                         onClick={() => handleDeleteEntry(entry.id)}
-                                                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-neutral-50 text-sm rounded transition-colors"
+                                                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-neutral-50 text-sm rounded-lg font-medium transition-all"
                                                     >
                                                         Delete
                                                     </button>
                                                 </div>
                                             </div>
 
-                                            <div className="space-y-2 text-sm">
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-neutral-400 w-24">Password:</span>
-                                                    <code className="flex-1 px-3 py-1 bg-neutral-950 rounded text-neutral-50 font-mono">
-                                                        {showPassword.has(entry.id) ? entry.password : '••••••••••••'}
-                                                    </code>
+                                            <div className="space-y-3">
+                                                {/* Username/Login */}
+                                                <div className="flex items-center justify-between py-2">
+                                                    <div className="flex-1">
+                                                        <div className="text-xs text-neutral-400 mb-1">Username</div>
+                                                        <div className="text-neutral-50 font-medium">{entry.username || 'N/A'}</div>
+                                                    </div>
                                                     <button
-                                                        onClick={() => toggleShowPassword(entry.id)}
-                                                        className="px-2 py-1 text-neutral-400 hover:text-neutral-50"
-                                                    >
-                                                        {showPassword.has(entry.id) ? 'Hide' : 'Show'}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => copyToClipboard(entry.password, 'Password')}
-                                                        className="px-2 py-1 text-neutral-400 hover:text-neutral-50"
+                                                        onClick={() => copyToClipboard(entry.username, 'Username')}
+                                                        className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded transition-all text-sm"
                                                     >
                                                         Copy
                                                     </button>
                                                 </div>
 
-                                                {entry.url && (
-                                                    <div className="flex items-center gap-2">
-                                                        <span className="text-neutral-400 w-24">URL:</span>
-                                                        <a
-                                                            href={entry.url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="flex-1 text-blue-400 hover:text-blue-300 truncate"
-                                                        >
-                                                            {entry.url}
-                                                        </a>
+                                                {/* Password */}
+                                                <div className="flex items-center justify-between py-2 border-t border-neutral-800">
+                                                    <div className="flex-1">
+                                                        <div className="text-xs text-neutral-400 mb-1">Password</div>
+                                                        <code className="text-neutral-50 font-mono text-sm">
+                                                            {showPassword.has(entry.id) ? entry.password : '••••••••••••'}
+                                                        </code>
                                                     </div>
-                                                )}
-
-                                                {entry.notes && (
                                                     <div className="flex gap-2">
-                                                        <span className="text-neutral-400 w-24">Notes:</span>
-                                                        <p className="flex-1 text-neutral-300">{entry.notes}</p>
+                                                        <button
+                                                            onClick={() => toggleShowPassword(entry.id)}
+                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded transition-all text-sm"
+                                                        >
+                                                            {showPassword.has(entry.id) ? 'Hide' : 'Show'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => copyToClipboard(entry.password, 'Password')}
+                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded transition-all text-sm"
+                                                        >
+                                                            Copy
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Notes */}
+                                                {entry.notes && (
+                                                    <div className="py-2 border-t border-neutral-800">
+                                                        <div className="text-xs text-neutral-400 mb-1">Notes</div>
+                                                        <p className="text-neutral-300 text-sm">{entry.notes}</p>
                                                     </div>
                                                 )}
 
+                                                {/* Tags */}
                                                 {entry.tags && entry.tags.length > 0 && (
-                                                    <div className="flex gap-2 items-center">
-                                                        <span className="text-neutral-400 w-24">Tags:</span>
-                                                        <div className="flex flex-wrap gap-1">
-                                                            {entry.tags.map((tag, idx) => (
-                                                                <span
-                                                                    key={idx}
-                                                                    className="px-2 py-0.5 bg-neutral-800 text-neutral-300 text-xs rounded-full"
-                                                                >
-                                                                    {tag}
-                                                                </span>
-                                                            ))}
-                                                        </div>
+                                                    <div className="flex flex-wrap gap-2 pt-2 border-t border-neutral-800">
+                                                        {entry.tags.map((tag, idx) => (
+                                                            <span
+                                                                key={idx}
+                                                                className="px-3 py-1 bg-neutral-800 text-neutral-300 text-xs rounded-full border border-neutral-700"
+                                                            >
+                                                                {tag}
+                                                            </span>
+                                                        ))}
                                                     </div>
                                                 )}
 
-                                                <div className="text-xs text-neutral-500 mt-2">
+                                                <div className="text-xs text-neutral-500 pt-2 border-t border-neutral-800">
                                                     Modified: {new Date(entry.modified).toLocaleString()}
                                                 </div>
                                             </div>
@@ -446,12 +485,33 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     </div>
                 )}
 
+                {/* Copy Success Popup */}
+                {showCopyPopup && (
+                    <div
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-5 py-3 rounded-lg shadow-lg transition-opacity duration-300 z-[9999]"
+                        style={{ opacity: showCopyPopup ? 1 : 0 }}
+                    >
+                        {copyPopupMessage}
+                    </div>
+                )}
+
                 {/* Entry Dialog */}
                 <EntryDialog
                     open={showEntryDialog}
                     onOpenChange={setShowEntryDialog}
                     entry={editingEntry}
+                    existingTags={allTags}
                     onSave={handleSaveEntry}
+                />
+
+                {/* Confirmation Dialog */}
+                <ConfirmDialog
+                    open={confirmDialog.open}
+                    onOpenChange={(open) => setConfirmDialog({ ...confirmDialog, open })}
+                    title={confirmDialog.title}
+                    message={confirmDialog.message}
+                    onConfirm={confirmDialog.onConfirm}
+                    danger={confirmDialog.danger}
                 />
             </div>
         </div>

@@ -7,6 +7,7 @@ interface EntryDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     entry?: PasswoodEntry | null;
+    existingTags: string[];
     onSave: (data: {
         title: string;
         username: string;
@@ -17,7 +18,7 @@ interface EntryDialogProps {
     }) => void;
 }
 
-export default function EntryDialog({ open, onOpenChange, entry, onSave }: EntryDialogProps) {
+export default function EntryDialog({ open, onOpenChange, entry, existingTags, onSave }: EntryDialogProps) {
     const [formData, setFormData] = useState({
         title: '',
         username: '',
@@ -27,6 +28,8 @@ export default function EntryDialog({ open, onOpenChange, entry, onSave }: Entry
         tags: ''
     });
     const [error, setError] = useState<string | null>(null);
+    const [showTagSuggestions, setShowTagSuggestions] = useState(false);
+    const [tagInput, setTagInput] = useState('');
 
     useEffect(() => {
         if (entry) {
@@ -78,6 +81,28 @@ export default function EntryDialog({ open, onOpenChange, entry, onSave }: Entry
 
         onOpenChange(false);
     };
+
+    const handleTagInputChange = (value: string) => {
+        setFormData(prev => ({ ...prev, tags: value }));
+        const lastCommaIndex = value.lastIndexOf(',');
+        const currentTag = value.slice(lastCommaIndex + 1).trim();
+        setTagInput(currentTag);
+        setShowTagSuggestions(currentTag.length > 0);
+    };
+
+    const handleTagSelect = (tag: string) => {
+        const lastCommaIndex = formData.tags.lastIndexOf(',');
+        const beforeLastTag = lastCommaIndex >= 0 ? formData.tags.slice(0, lastCommaIndex + 1) + ' ' : '';
+        const newValue = beforeLastTag + tag + ', ';
+        setFormData(prev => ({ ...prev, tags: newValue }));
+        setShowTagSuggestions(false);
+        setTagInput('');
+    };
+
+    const filteredSuggestions = existingTags.filter(tag =>
+        tag.toLowerCase().includes(tagInput.toLowerCase()) &&
+        !formData.tags.split(',').map(t => t.trim()).includes(tag)
+    );
 
     return (
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -180,16 +205,33 @@ export default function EntryDialog({ open, onOpenChange, entry, onSave }: Entry
                             />
                         </div>
 
-                        <div>
+                        <div className="relative">
                             <label className="block text-neutral-300 mb-2 text-sm">Tags</label>
                             <input
                                 type="text"
                                 placeholder="work, personal, banking"
                                 value={formData.tags}
-                                onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                                onChange={(e) => handleTagInputChange(e.target.value)}
+                                onFocus={() => setShowTagSuggestions(tagInput.length > 0)}
+                                onBlur={() => setTimeout(() => setShowTagSuggestions(false), 200)}
                                 className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
                             />
-                            <p className="text-xs text-neutral-400 mt-1">Separate tags with commas</p>
+                            <p className="text-xs text-neutral-400 mt-1">Separate tags with commas. Type to see existing tags or create new ones.</p>
+
+                            {showTagSuggestions && filteredSuggestions.length > 0 && (
+                                <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl max-h-48 overflow-y-auto">
+                                    {filteredSuggestions.map((tag) => (
+                                        <button
+                                            key={tag}
+                                            type="button"
+                                            onClick={() => handleTagSelect(tag)}
+                                            className="w-full text-left px-4 py-2 hover:bg-neutral-800 text-neutral-50 transition-colors first:rounded-t-lg last:rounded-b-lg"
+                                        >
+                                            <span className="font-medium">{tag}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex gap-3 pt-4">
