@@ -14,11 +14,13 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorPopupMessage, setErrorPopupMessage] = useState('');
     const [unlockSuccess, setUnlockSuccess] = useState(false);
+    const [unlockError, setUnlockError] = useState(false);
 
     useEffect(() => {
         if (open) {
             setPassword('');
             setUnlockSuccess(false);
+            setUnlockError(false);
         }
     }, [open]);
 
@@ -49,6 +51,8 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
                 onUnlocked(password);
             }, 400);
         } catch (err) {
+            setUnlockError(true);
+            setTimeout(() => setUnlockError(false), 500);
             setErrorPopupMessage('Incorrect password');
             setShowErrorPopup(true);
             setTimeout(() => setShowErrorPopup(false), 2000);
@@ -66,6 +70,7 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
                 title="Unlock App"
                 maxWidth="sm"
                 animateSuccess={unlockSuccess}
+                animateError={unlockError}
                 showCloseButton={false}
             >
                 <div className="space-y-3">
@@ -90,7 +95,7 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
                             disabled={loading}
                             className="w-full px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {loading ? 'Unlocking...' : 'Unlock'}
+                            Unlock
                         </Button>
                     </div>
                 </div>
