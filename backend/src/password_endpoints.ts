@@ -1,9 +1,13 @@
 import express, { Request, Response } from 'express';
 import fs from 'fs/promises';
 import path from 'path';
+import { verifyAppPassword } from './auth_middleware';
 
 const router = express.Router();
 const PASSWORDS_DIR = path.resolve(__dirname, '../../data/passwords'); // Directory where .pass files are stored
+
+// Apply authentication middleware to all routes
+router.use(verifyAppPassword);
 
 // Ensure passwords directory exists
 (async () => {

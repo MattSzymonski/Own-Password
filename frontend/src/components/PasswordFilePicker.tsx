@@ -8,9 +8,10 @@ import { Button } from '@/components/animate-ui/components/buttons/button';
 interface PasswordFilePickerProps {
     onFileSelect: (filename: string) => void;
     onCreateNew: () => void;
+    onLockApp?: () => void;
 }
 
-export default function PasswordFilePicker({ onFileSelect, onCreateNew }: PasswordFilePickerProps) {
+export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockApp }: PasswordFilePickerProps) {
     const [files, setFiles] = useState<PasswordFileInfo[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -94,9 +95,23 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
 
                 <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-semibold text-neutral-50">
-                            Password Collections
-                        </h2>
+                        <div className="flex items-center gap-2">
+                            {onLockApp && (
+                                <Button
+                                    onClick={onLockApp}
+                                    variant="ghost"
+                                    size="icon"
+                                    className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 p-2 translate-y-[2px]"
+                                >
+                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="15 18 9 12 15 6"></polyline>
+                                    </svg>
+                                </Button>
+                            )}
+                            <h2 className="text-2xl font-semibold text-neutral-50">
+                                Password Collections
+                            </h2>
+                        </div>
                         <Button
                             onClick={onCreateNew}
                             className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2 md:px-6 px-3"

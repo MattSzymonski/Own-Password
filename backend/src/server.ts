@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import passwordEndpoints from './password_endpoints';
+import { verifyAppPassword } from './auth_middleware';
 
 const PORT = 3010;
 const app = express();
@@ -10,10 +11,13 @@ const app = express();
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5180',
   methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'x-access-password'],
+  allowedHeaders: ['Content-Type', 'x-app-password'],
 }));
 
 app.use(express.json({ limit: '50mb' })); // Increase limit for encrypted files
+
+// Apply app password authentication middleware to all /api routes
+app.use('/api', verifyAppPassword);
 
 app.use('/api', passwordEndpoints);
 

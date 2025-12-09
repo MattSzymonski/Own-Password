@@ -11,8 +11,14 @@ services:
     environment:
       - NODE_ENV=production
       - FRONTEND_URL=https://own-password.campfire-on-the-wall.com
-      - VITE_TEST_VARIABLE='Im a test variable'
-      - VITE_APP_NAME=
+      # Path to file containing app password (backend only)
+      - APP_PASSWORD_FILE=
+      # Enable app password requirement (frontend flag, set to 'true' to enable)
+      - REQUIRE_APP_PASSWORD=
+      # Custom app name to display instead of logo (optional)
+      - APP_NAME=
+      # Single collection mode: filename to open directly, skipping collection picker (optional)
+      - SINGLE_COLLECTION=
     volumes:
       # Password files data
       - /home/campfire/data/other/passwords:/app/data/passwords

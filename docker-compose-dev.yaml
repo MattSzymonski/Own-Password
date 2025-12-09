@@ -11,10 +11,16 @@ services:
       - 3010:3010
     environment:
       - NODE_ENV=development
-      - FRONTEND_URL=http://localhost:5180 # use local host if not yet exposed
+      - FRONTEND_URL=http://localhost:5180
       #- FRONTEND_URL=https://dev.campfire-on-the-wall.com # use actual domain when exposed
-      - VITE_TEST_VARIABLE='Im a test variable'
+      # Path to file containing app password (backend only)
+      - APP_PASSWORD_FILE=/app/data/passwords/own_password_app
+      # Enable app password requirement (frontend flag)
+      - VITE_REQUIRE_APP_PASSWORD=true
+      # Custom app name to display instead of logo (optional)
       - VITE_APP_NAME=
+      # Single collection mode: filename to open directly, skipping collection picker (optional)
+      - VITE_SINGLE_COLLECTION=
     volumes:
       # To develop and enable hot reload
       - ./frontend:/app/frontend

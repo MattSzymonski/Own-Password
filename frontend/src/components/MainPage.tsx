@@ -6,13 +6,13 @@ import UnlockDialog from './UnlockDialog';
 import CreateCollectionDialog from './CreateCollectionDialog';
 import AppUnlockDialog from './AppUnlockDialog';
 import type { PasswoodCollection } from '../cryptor';
-import { isAppPasswordRequired, setAppPasswordHash, getAppPasswordHash } from '../utils/auth';
+import { isAppPasswordRequired, setAppPassword, getAppPassword } from '../utils/auth';
 
 export default function MainPage() {
     const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
     const hasSingleCollection = singleCollection && singleCollection.trim() !== '';
 
-    const [appUnlocked, setAppUnlocked] = useState(!isAppPasswordRequired() || !!getAppPasswordHash());
+    const [appUnlocked, setAppUnlocked] = useState(!isAppPasswordRequired() || !!getAppPassword());
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
     const [collection, setCollection] = useState<PasswoodCollection | null>(null);
     const [masterPassword, setMasterPassword] = useState('');
@@ -60,16 +60,33 @@ export default function MainPage() {
         }, 250);
     };
 
-    const handleAppUnlocked = (passwordHash: string) => {
-        setAppPasswordHash(passwordHash);
+    const handleAppUnlocked = (password: string) => {
+        setAppPassword(password);
         setAppUnlocked(true);
+    };
+
+    const handleLockApp = () => {
+        setAppPassword('');
+        setAppUnlocked(false);
+        setSelectedFile(null);
+        setCollection(null);
+        setMasterPassword('');
     };
 
     // Show app unlock dialog if app password is required and not yet unlocked
     if (!appUnlocked) {
         return (
-            <div className="bg-black min-h-screen relative">
+            <div className="bg-black min-h-screen relative flex flex-col">
                 <AppUnlockDialog open={true} onUnlocked={handleAppUnlocked} />
+
+                {/* Logo at bottom of page */}
+                <div className="fixed bottom-8 left-0 right-0 flex justify-center z-[100]">
+                    <img
+                        src="/images/own_password_logo.svg"
+                        alt="Logo"
+                        className="w-20 opacity-30"
+                    />
+                </div>
             </div>
         );
     }
@@ -93,8 +110,12 @@ export default function MainPage() {
                     </motion.div>
                 ) : (
                     <div key="picker">
-                        {!hasSingleCollection && (
-                            <PasswordFilePicker onFileSelect={handleFileSelect} onCreateNew={handleCreateNew} />
+                        {!hasSingleCollection && appUnlocked && (
+                            <PasswordFilePicker
+                                onFileSelect={handleFileSelect}
+                                onCreateNew={handleCreateNew}
+                                onLockApp={isAppPasswordRequired() ? handleLockApp : undefined}
+                            />
                         )}
                         <UnlockDialog
                             open={unlockDialogOpen}

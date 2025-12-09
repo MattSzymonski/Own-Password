@@ -2,11 +2,10 @@ import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import CustomDialog from './CustomDialog';
-import { hashPassword } from '../utils/auth';
 
 interface AppUnlockDialogProps {
     open: boolean;
-    onUnlocked: (passwordHash: string) => void;
+    onUnlocked: (password: string) => void;
 }
 
 export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogProps) {
@@ -34,13 +33,10 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
         try {
             setLoading(true);
 
-            // Hash the password
-            const passwordHash = await hashPassword(password);
-
             // Verify with backend by making a test request
             const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3010/api'}/password_files`, {
                 headers: {
-                    'x-app-password': passwordHash,
+                    'x-app-password': password,
                 },
             });
 
@@ -50,7 +46,7 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
 
             setUnlockSuccess(true);
             setTimeout(() => {
-                onUnlocked(passwordHash);
+                onUnlocked(password);
             }, 400);
         } catch (err) {
             setErrorPopupMessage('Incorrect password');
@@ -72,10 +68,6 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
                 animateSuccess={unlockSuccess}
                 showCloseButton={false}
             >
-                <Dialog.Description className="text-neutral-300 mb-6">
-                    Enter the app password to continue
-                </Dialog.Description>
-
                 <div className="space-y-3">
                     <div>
                         <label className="block text-neutral-300 mb-2 text-sm">

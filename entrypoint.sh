@@ -1,9 +1,14 @@
 #!/bin/sh
 
 if [ "$NODE_ENV" = "production" ]; then
-  echo "🔧 Injecting VITE_ environment variables into built frontend files..."
-  env | grep '^VITE_' | while IFS='=' read -r key value; do
-    placeholder="__${key}__"
+  echo "🔧 Injecting frontend environment variables into built frontend files..."
+  
+  # List of frontend environment variables to inject
+  FRONTEND_VARS="APP_NAME REQUIRE_APP_PASSWORD SINGLE_COLLECTION"
+  
+  for var in $FRONTEND_VARS; do
+    value=$(eval echo \$$var)
+    placeholder="__${var}__"
     echo "> Replacing $placeholder with $value"
     find /app/frontend/dist -type f -exec sed -i "s|$placeholder|$value|g" {} +
   done

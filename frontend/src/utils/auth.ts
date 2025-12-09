@@ -3,42 +3,30 @@
  */
 
 /**
- * Hash a password using SHA-256
+ * Get the stored app password from sessionStorage
  */
-export async function hashPassword(password: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    return hashHex;
+export function getAppPassword(): string | null {
+    return sessionStorage.getItem('appPassword');
 }
 
 /**
- * Get the stored app password hash from sessionStorage
+ * Set the app password in sessionStorage
  */
-export function getAppPasswordHash(): string | null {
-    return sessionStorage.getItem('appPasswordHash');
+export function setAppPassword(password: string): void {
+    sessionStorage.setItem('appPassword', password);
 }
 
 /**
- * Set the app password hash in sessionStorage
+ * Clear the app password from sessionStorage
  */
-export function setAppPasswordHash(hash: string): void {
-    sessionStorage.setItem('appPasswordHash', hash);
-}
-
-/**
- * Clear the app password hash from sessionStorage
- */
-export function clearAppPasswordHash(): void {
-    sessionStorage.removeItem('appPasswordHash');
+export function clearAppPassword(): void {
+    sessionStorage.removeItem('appPassword');
 }
 
 /**
  * Check if app password is required
  */
 export function isAppPasswordRequired(): boolean {
-    const appPasswordFile = import.meta.env.VITE_APP_PASSWORD_FILE || import.meta.env.APP_PASSWORD_FILE;
-    return appPasswordFile !== undefined && appPasswordFile !== null && appPasswordFile.trim() !== '';
+    const requireAuth = import.meta.env.VITE_REQUIRE_APP_PASSWORD || import.meta.env.REQUIRE_APP_PASSWORD;
+    return requireAuth === 'true' || requireAuth === '1';
 }

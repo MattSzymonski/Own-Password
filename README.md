@@ -15,6 +15,19 @@
 - Runs in a single Docker container - 1 minute deployment on your server - Full control of your data, no cloud dependencies
 - 
 
+# Create htpasswd file
+htpasswd -cm /home/campfire/data/other/passwords/.htpasswd myusername
+
+# Set permissions
+chmod 600 /home/campfire/data/other/passwords/.htpasswd
+
+# In docker-compose-dev.yaml
+- APP_PASSWORD_FILE=/app/data/passwords/.htpasswd
+
+# Mount the file
+- /home/campfire/data/other/passwords/.htpasswd:/app/data/passwords/.htpasswd:ro
+
+
 
 **Modern self-hosted password manager** - Securely store and manage your passwords with military-grade AES-256-GCM encryption. Access your password vault through a beautiful, intuitive interface.
 

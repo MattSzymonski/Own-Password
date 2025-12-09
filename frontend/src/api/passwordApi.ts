@@ -2,7 +2,7 @@
  * API client for password file operations
  */
 
-import { getAppPasswordHash } from '../utils/auth';
+import { getAppPassword } from '../utils/auth';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
 
@@ -14,15 +14,13 @@ function getHeaders(): HeadersInit {
         'Content-Type': 'application/json',
     };
 
-    const appPasswordHash = getAppPasswordHash();
-    if (appPasswordHash) {
-        headers['x-app-password'] = appPasswordHash;
+    const appPassword = getAppPassword();
+    if (appPassword) {
+        headers['x-app-password'] = appPassword;
     }
 
     return headers;
-}
-
-export interface PasswordFileInfo {
+} export interface PasswordFileInfo {
     filename: string;
     size: number;
     modified: string;
