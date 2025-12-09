@@ -40,13 +40,20 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
 
     const formatDate = (dateString: string): string => {
         const date = new Date(dateString);
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${day}.${month}.${year} ${hours}:${minutes}`;
     };
 
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-neutral-950">
-                <div className="text-neutral-50 text-xl">Loading password files...</div>
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-neutral-700 border-t-neutral-50 rounded-full animate-spin"></div>
+                </div>
             </div>
         );
     }
@@ -73,9 +80,6 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                     <h1 className="text-5xl font-black text-neutral-50 mb-4 uppercase tracking-[px]" style={{ fontFamily: 'Outfit' }}>
                         Own Password
                     </h1>
-                    <p className="text-neutral-300 text-lg">
-                        Secure password manager with encrypted storage
-                    </p>
                 </div>
 
                 <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
@@ -110,7 +114,8 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
                                                 <h3 className="text-lg font-medium text-neutral-50 group-hover:text-neutral-200 transition-colors">
-                                                    {file.filename}
+                                                    {file.filename.replace('.pass', '')}
+                                                    <span className="text-neutral-500">.pass</span>
                                                 </h3>
                                             </div>
                                             <div className="flex gap-6 text-sm text-neutral-400">
@@ -138,10 +143,6 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                             ))}
                         </div>
                     )}
-                </div>
-
-                <div className="mt-8 text-center text-neutral-500 text-sm">
-                    <p>All password files are encrypted with AES-256-GCM</p>
                 </div>
             </div>
         </div>

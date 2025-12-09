@@ -89,10 +89,10 @@ export default function EditorHeader({
             </div>
 
             <div>
-                <h1 className="text-5xl font-bold text-neutral-50">{filename}</h1>
-                <p className="text-neutral-400 mt-1">
-                    {passwordCount} {passwordCount === 1 ? 'password' : 'passwords'}
-                </p>
+                <h1 className="text-5xl font-bold text-neutral-50">
+                    {filename.replace('.pass', '')}
+                    <span className="text-neutral-500">.pass</span>
+                </h1>
             </div>
         </div>
     );

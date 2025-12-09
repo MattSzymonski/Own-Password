@@ -16,6 +16,16 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
     const [openDropdown, setOpenDropdown] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${day}.${month}.${year} ${hours}:${minutes}`;
+    };
+
     return (
         <div className="bg-neutral-900 border border-neutral-800 rounded-xl">
             {/* Header row with expand button, title, and options */}
@@ -35,17 +45,6 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
                     <h4 className="text-xl font-semibold text-neutral-50">
                         {password.title}
                     </h4>
-                    {password.url && (
-                        <a
-                            href={password.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="text-blue-400 hover:text-blue-300 text-sm truncate block mt-1"
-                        >
-                            {password.url}
-                        </a>
-                    )}
                 </div>
 
                 <div className="relative flex-shrink-0" onClick={(e) => e.stopPropagation()}>
@@ -152,6 +151,21 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
                                 </div>
                             </div>
 
+                            {/* URL */}
+                            {password.url && (
+                                <div className="py-2">
+                                    <div className="text-xs text-neutral-400 mb-1">URL</div>
+                                    <a
+                                        href={password.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-400 hover:text-blue-300 text-sm block truncate"
+                                    >
+                                        {password.url}
+                                    </a>
+                                </div>
+                            )}
+
                             {/* Notes */}
                             {password.notes && (
                                 <div className="py-2">
@@ -178,7 +192,7 @@ export default function PasswordEntry({ password, onEdit, onDelete }: PasswordEn
                             )}
 
                             <div className="text-xs text-neutral-500 pt-2">
-                                Modified: {new Date(password.modified).toLocaleString()}
+                                Modified: {formatDate(password.modified)}
                             </div>
                         </div>
                     </motion.div>

@@ -264,7 +264,7 @@ export default function EntryDialog({ open, onOpenChange, password, existingTags
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50"
+                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 flex items-center gap-2"
                             aria-label="Close"
                         >
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
