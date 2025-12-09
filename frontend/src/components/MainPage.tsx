@@ -133,7 +133,12 @@ export default function MainPage() {
                         />
                     </motion.div>
                 ) : (
-                    <div key="picker">
+                    <motion.div
+                        key="picker"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    >
                         {!hasSingleCollection && appUnlocked && (
                             <PasswordFilePicker
                                 onFileSelect={handleFileSelect}
@@ -152,7 +157,7 @@ export default function MainPage() {
                             onOpenChange={setCreateDialogOpen}
                             onCreated={handleUnlocked}
                         />
-                    </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 
