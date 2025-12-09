@@ -11,6 +11,7 @@ import { isAppPasswordRequired, setAppPassword, getAppPassword } from '../utils/
 export default function MainPage() {
     const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
     const hasSingleCollection = singleCollection && singleCollection.trim() !== '';
+    const hideLogo = import.meta.env.VITE_HIDE_APP_LOGO === 'true' || import.meta.env.HIDE_APP_LOGO === 'true';
 
     const [appUnlocked, setAppUnlocked] = useState(!isAppPasswordRequired() || !!getAppPassword());
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
@@ -88,13 +89,15 @@ export default function MainPage() {
                 <AppUnlockDialog open={true} onUnlocked={handleAppUnlocked} />
 
                 {/* Logo at bottom of page */}
-                <div className="fixed bottom-8 left-0 right-0 flex justify-center z-[100]">
-                    <img
-                        src="/images/own_password_logo.svg"
-                        alt="Logo"
-                        className="w-20 opacity-30"
-                    />
-                </div>
+                {!hideLogo && (
+                    <div className="fixed bottom-8 left-0 right-0 flex justify-center z-[100]">
+                        <img
+                            src="/images/own_password_logo.svg"
+                            alt="Logo"
+                            className="w-20 opacity-30"
+                        />
+                    </div>
+                )}
 
                 {/* Fade overlay */}
                 <AnimatePresence>

@@ -73,25 +73,11 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
         return `${day}.${month}.${year} ${hours}:${minutes}`;
     };
 
+    const hideLogo = import.meta.env.VITE_HIDE_APP_LOGO === 'true' || import.meta.env.HIDE_APP_LOGO === 'true';
+
     return (
         <div className="min-h-screen bg-neutral-950 p-8">
             <div className="max-w-2xl mx-auto">
-                <div className="text-center mb-12">
-                    {(import.meta.env.VITE_APP_NAME || import.meta.env.APP_NAME) ? (
-                        <h1 className="text-5xl font-black text-neutral-50 mb-4 uppercase tracking-wide" style={{ fontFamily: 'Outfit' }}>
-                            {import.meta.env.VITE_APP_NAME || import.meta.env.APP_NAME}
-                        </h1>
-                    ) : (
-                        <div className="w-full max-w-[300px] mx-auto h-[95px]">
-                            <img
-                                src="/images/own_password_logo.svg"
-                                alt="Own Password"
-                                className="w-full h-full"
-                            />
-                        </div>
-                    )}
-                </div>
-
                 <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
@@ -191,6 +177,17 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                         )}
                     </div>
                 </div>
+
+                {/* Logo at bottom of page */}
+                {!hideLogo && (
+                    <div className="fixed bottom-8 left-0 right-0 flex justify-center z-[100]">
+                        <img
+                            src="/images/own_password_logo.svg"
+                            alt="Logo"
+                            className="w-20 opacity-30"
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

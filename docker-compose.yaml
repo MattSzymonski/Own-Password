@@ -15,6 +15,8 @@ services:
       - APP_PASSWORD_FILE=
       # Enable app password requirement (frontend flag, set to 'true' to enable)
       - REQUIRE_APP_PASSWORD=
+      # Hide app logo at bottom of page (optional, set to 'true' to hide)
+      - HIDE_APP_LOGO=
       # Custom app name to display instead of logo (optional)
       - APP_NAME=
       # Single collection mode: filename to open directly, skipping collection picker (optional)
