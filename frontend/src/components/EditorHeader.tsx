@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 
 interface EditorHeaderProps {
@@ -55,26 +56,34 @@ export default function EditorHeader({
                             ⋯
                         </Button>
 
-                        {showDropdown && (
-                            <>
-                                <div
-                                    className="fixed inset-0 z-10"
-                                    onClick={() => setShowDropdown(false)}
-                                />
-                                <div className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-20">
-                                    <Button
-                                        onClick={() => {
-                                            setShowDropdown(false);
-                                            onDeleteCollection();
-                                        }}
-                                        variant="ghost"
-                                        className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/30 rounded-lg flex items-center gap-2 h-auto"
+                        <AnimatePresence>
+                            {showDropdown && (
+                                <>
+                                    <div
+                                        className="fixed inset-0 z-10"
+                                        onClick={() => setShowDropdown(false)}
+                                    />
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                                        className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-20"
                                     >
-                                        <span>Delete Collection</span>
-                                    </Button>
-                                </div>
-                            </>
-                        )}
+                                        <Button
+                                            onClick={() => {
+                                                setShowDropdown(false);
+                                                onDeleteCollection();
+                                            }}
+                                            variant="ghost"
+                                            className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/30 rounded-lg flex items-center gap-2 h-auto"
+                                        >
+                                            <span>Delete Collection</span>
+                                        </Button>
+                                    </motion.div>
+                                </>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
             </div>
