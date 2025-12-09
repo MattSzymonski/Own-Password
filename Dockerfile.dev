@@ -1,0 +1,24 @@
+# Using slim instead of alpine to make it work with better-sqlite3
+FROM node:22-slim 
+
+WORKDIR /app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y curl
+# <PUT DEPENDENCIES HERE IF NEEDED>
+
+COPY frontend/package*.json ./frontend/
+COPY backend/package*.json ./backend/
+RUN cd frontend && npm install
+RUN cd backend && npm install
+
+# Copy the source code
+COPY frontend ./frontend
+COPY backend ./backend
+
+# Expose frontentd and backend ports
+EXPOSE 5180 3010
+
+# Run based on NODE_ENV
+COPY entrypoint.sh /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]

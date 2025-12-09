@@ -1,0 +1,29 @@
+services:
+  passwood:
+    container_name: passwood_DEV
+    domainname: campfire-on-the-wall
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 5180:5180
+      - 3010:3010
+    environment:
+      - NODE_ENV=development
+      - FRONTEND_URL=http://localhost:5180 # use local host if not yet exposed
+      #- FRONTEND_URL=https://dev.campfire-on-the-wall.com # use actual domain when exposed
+      - VITE_TEST_VARIABLE='Im a test variable'
+    volumes:
+      # To develop and enable hot reload
+      - ./frontend:/app/frontend
+      - ./backend:/app/backend
+      # Password files data
+      - /home/campfire/data/other/passwords:/app/data/passwords
+    networks:
+      campfire-on-the-wall-net:
+        ipv4_address: 10.1.0.159
+networks:
+  campfire-on-the-wall-net:
+    name: campfire-on-the-wall-net
+    external: true

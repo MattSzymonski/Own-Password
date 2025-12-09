@@ -1,0 +1,24 @@
+services:
+  passwood:
+    container_name: passwood
+    domainname: campfire-on-the-wall
+    restart: unless-stopped
+    build:
+      context: .                 
+      dockerfile: Dockerfile
+    ports:
+      - 3010:3010
+    environment:
+      - NODE_ENV=production
+      - FRONTEND_URL=https://passwood.campfire-on-the-wall.com
+      - VITE_TEST_VARIABLE='Im a test variable'
+    volumes:
+      # Password files data
+      - /home/campfire/data/other/passwords:/app/data/passwords
+    networks:
+      campfire-on-the-wall-net:
+        ipv4_address: 10.1.0.159
+networks:
+  campfire-on-the-wall-net:
+    name: campfire-on-the-wall-net
+    external: true

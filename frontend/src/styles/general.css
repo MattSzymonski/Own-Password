@@ -1,0 +1,185 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/Outfit.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f5f5f5;
+  --color-neutral-200: #e5e5e5;
+  --color-neutral-300: #d4d4d4;
+  --color-neutral-400: #a3a3a3;
+  --color-neutral-500: #737373;
+  --color-neutral-600: #525252;
+  --color-neutral-700: #404040;
+  --color-neutral-800: #262626;
+  --color-neutral-900: #171717;
+  --color-neutral-950: #0a0a0a;
+
+  --font-family-title: 'Outfit', sans-serif;
+  --font-family-body: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: var(--font-family-body);
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-title);
+  font-weight: 700;
+}
+
+.logo {
+  font-family: "Momo Trust Display", sans-serif;
+}
+
+/* Custom slider styles */
+input[type="range"].slider {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"].slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+input[type="range"].slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+input[type="range"].slider::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+}
+
+input[type="range"].slider::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+}
+
+/* Light slider styles (for dark and image themes) */
+input[type="range"].slider-light {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.3);
+  height: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+input[type="range"].slider-light::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
+  pointer-events: auto;
+}
+
+input[type="range"].slider-light::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  pointer-events: auto;
+}
+
+input[type="range"].slider-light::-webkit-slider-runnable-track {
+  height: 3px;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"].slider-light::-moz-range-track {
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+}
+
+/* Dark slider styles (for light theme) */
+input[type="range"].slider-dark {
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(0, 0, 0, 0.2);
+  height: 3px;
+  border-radius: 2px;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+input[type="range"].slider-dark::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #404040;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
+  pointer-events: auto;
+}
+
+input[type="range"].slider-dark::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #404040;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  pointer-events: auto;
+}
+
+input[type="range"].slider-dark::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"].slider-dark::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
