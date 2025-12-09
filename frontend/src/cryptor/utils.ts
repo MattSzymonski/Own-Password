@@ -63,7 +63,7 @@ export function addPassword(database: PasswoodDatabase, password: PasswoodPasswo
     return {
         ...database,
         modified: new Date().toISOString(),
-        passwords: [...database.passwords, password]
+        passwords: [...(database.passwords || []), password]
     };
 }
 

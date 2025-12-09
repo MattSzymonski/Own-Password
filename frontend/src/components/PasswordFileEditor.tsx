@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Eye, EyeOff } from 'lucide-react';
 import { savePasswordFile, deletePasswordFile } from '../api/passwordApi';
 import { encodePasswoodFile } from '../cryptor';
 import type { PasswoodCollection, PasswoodPassword } from '../cryptor';
 import EntryDialog from './EntryDialog';
 import ConfirmDialog from './ConfirmDialog';
 import { Button } from '@/components/animate-ui/components/buttons/button';
+import { CopyButton } from '@/components/animate-ui/components/buttons/copy';
 import {
     createPassword,
     addPassword,
@@ -34,8 +35,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const [showDropdown, setShowDropdown] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [showSavePopup, setShowSavePopup] = useState(false);
-    const [showCopyPopup, setShowCopyPopup] = useState(false);
-    const [copyPopupMessage, setCopyPopupMessage] = useState('');
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean;
         title: string;
@@ -165,13 +164,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         });
     };
 
-    const copyToClipboard = (text: string, label: string) => {
-        navigator.clipboard.writeText(text);
-        setCopyPopupMessage(`${label} copied to clipboard!`);
-        setShowCopyPopup(true);
-        setTimeout(() => setShowCopyPopup(false), 2000);
-    };
-
     const toggleTagFilter = (tag: string) => {
         setSelectedTags(prev => {
             const newSet = new Set(prev);
@@ -294,24 +286,22 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     </div>
                 )}
 
-                {/* Add Password Button */}
-                <div className="mb-6">
-                    <Button
-                        onClick={handleNewPassword}
-                        className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
-                    >
-                        <Plus className="w-5 h-5" />
-                        Add New Password
-                    </Button>
-                </div>
-
                 <div className="grid grid-cols-1 gap-8">
                     {/* Passwords List */}
                     <div>
                         <div className="bg-neutral-900 rounded-2xl p-6 shadow-xl border border-neutral-800">
-                            <h3 className="text-2xl font-semibold text-neutral-50 mb-6">
-                                Passwords
-                            </h3>
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-semibold text-neutral-50">
+                                    Passwords
+                                </h3>
+                                <Button
+                                    onClick={handleNewPassword}
+                                    className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium shadow-lg flex items-center gap-2"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                    New Password
+                                </Button>
+                            </div>
 
                             {/* Search Bar */}
                             <div className="mb-4">
@@ -412,20 +402,20 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
                                             <div className="space-y-3">
                                                 {/* Login */}
-                                                <div className="flex items-center justify-between py-2">
-                                                    <div className="flex-1">
-                                                        <div className="text-xs text-neutral-400 mb-1">Login</div>
-                                                        <div className="text-neutral-50 font-medium">{password.login || 'N/A'}</div>
+                                                {password.login && (
+                                                    <div className="flex items-center justify-between py-2">
+                                                        <div className="flex-1">
+                                                            <div className="text-xs text-neutral-400 mb-1">Login</div>
+                                                            <div className="text-neutral-50 font-medium">{password.login}</div>
+                                                        </div>
+                                                        <CopyButton
+                                                            content={password.login}
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
+                                                        />
                                                     </div>
-                                                    <Button
-                                                        onClick={() => copyToClipboard(password.login, 'Login')}
-                                                        variant="ghost"
-                                                        size="sm"
-                                                        className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded text-sm h-auto"
-                                                    >
-                                                        Copy
-                                                    </Button>
-                                                </div>
+                                                )}
 
                                                 {/* Password */}
                                                 <div className="flex items-center justify-between py-2 border-t border-neutral-800">
@@ -439,19 +429,17 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                                                         <Button
                                                             onClick={() => toggleShowPassword(password.id)}
                                                             variant="ghost"
-                                                            size="sm"
-                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded text-sm h-auto"
+                                                            size="icon-sm"
+                                                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
                                                         >
-                                                            {showPassword.has(password.id) ? 'Hide' : 'Show'}
+                                                            {showPassword.has(password.id) ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                                                         </Button>
-                                                        <Button
-                                                            onClick={() => copyToClipboard(password.password, 'Password')}
+                                                        <CopyButton
+                                                            content={password.password}
                                                             variant="ghost"
                                                             size="sm"
-                                                            className="px-3 py-1.5 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 rounded text-sm h-auto"
-                                                        >
-                                                            Copy
-                                                        </Button>
+                                                            className="text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800"
+                                                        />
                                                     </div>
                                                 </div>
 
@@ -496,16 +484,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                         style={{ opacity: showSavePopup ? 1 : 0 }}
                     >
                         Password file saved successfully!
-                    </div>
-                )}
-
-                {/* Copy Success Popup */}
-                {showCopyPopup && (
-                    <div
-                        className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-blue-600 text-white px-5 py-3 rounded-lg shadow-lg transition-opacity duration-300 z-[9999]"
-                        style={{ opacity: showCopyPopup ? 1 : 0 }}
-                    >
-                        {copyPopupMessage}
                     </div>
                 )}
 
