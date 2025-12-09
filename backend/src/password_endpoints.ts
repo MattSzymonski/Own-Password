@@ -3,7 +3,7 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const router = express.Router();
-const PASSWORDS_DIR = path.resolve(__dirname, '../../data/passwords'); // Directory where .passwood files are stored
+const PASSWORDS_DIR = path.resolve(__dirname, '../../data/passwords'); // Directory where .pass files are stored
 
 // Ensure passwords directory exists
 (async () => {
@@ -14,14 +14,14 @@ const PASSWORDS_DIR = path.resolve(__dirname, '../../data/passwords'); // Direct
     }
 })();
 
-// GET /api/password_files - List all .passwood files
+// GET /api/password_files - List all .pass files
 router.get('/password_files', async (req: Request, res: Response) => {
     try {
         // Read all files from directory
         const files = await fs.readdir(PASSWORDS_DIR);
         const passwoodFiles = files.filter((file) => {
             const ext = path.extname(file).toLowerCase();
-            return ext === '.passwood';
+            return ext === '.pass';
         });
 
         // Sort alphabetically
@@ -51,13 +51,13 @@ router.get('/password_files', async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/password_files/:filename - Download a specific .passwood file
+// GET /api/password_files/:filename - Download a specific .pass file
 router.get('/password_files/:filename', async (req: Request, res: Response) => {
     try {
         const { filename } = req.params;
 
         // Validate filename
-        if (!filename.endsWith('.passwood')) {
+        if (!filename.endsWith('.pass')) {
             return res.status(400).json({ error: 'Invalid file extension' });
         }
 
@@ -86,13 +86,13 @@ router.get('/password_files/:filename', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/password_files/:filename - Save/update a .passwood file
+// POST /api/password_files/:filename - Save/update a .pass file
 router.post('/password_files/:filename', async (req: Request, res: Response) => {
     try {
         const { filename } = req.params;
 
         // Validate filename
-        if (!filename.endsWith('.passwood')) {
+        if (!filename.endsWith('.pass')) {
             return res.status(400).json({ error: 'Invalid file extension' });
         }
 
@@ -123,13 +123,13 @@ router.post('/password_files/:filename', async (req: Request, res: Response) => 
     }
 });
 
-// DELETE /api/password_files/:filename - Delete a .passwood file
+// DELETE /api/password_files/:filename - Delete a .pass file
 router.delete('/password_files/:filename', async (req: Request, res: Response) => {
     try {
         const { filename } = req.params;
 
         // Validate filename
-        if (!filename.endsWith('.passwood')) {
+        if (!filename.endsWith('.pass')) {
             return res.status(400).json({ error: 'Invalid file extension' });
         }
 

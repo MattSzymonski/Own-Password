@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Plus } from 'lucide-react';
 import { fetchPasswordFiles } from '../api/passwordApi';
 import type { PasswordFileInfo } from '../api/passwordApi';
 
@@ -68,8 +69,8 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
         <div className="min-h-screen bg-neutral-950 p-8">
             <div className="max-w-4xl mx-auto">
                 <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold text-neutral-50 mb-4">
-                        OwnPassword
+                    <h1 className="text-5xl font-black text-neutral-50 mb-4 uppercase tracking-[px]" style={{ fontFamily: 'Outfit' }}>
+                        Own Password
                     </h1>
                     <p className="text-neutral-300 text-lg">
                         Secure password manager with encrypted storage
@@ -79,30 +80,22 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                 <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-semibold text-neutral-50">
-                            Your Password Files
+                            Your Password Collections
                         </h2>
                         <button
                             onClick={onCreateNew}
-                            className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg"
+                            className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
                         >
-                            + Create New
+                            <Plus className="w-5 h-5" />
+                            New Collection
                         </button>
                     </div>
 
                     {files.length === 0 ? (
                         <div className="text-center py-12">
-                            <div className="text-neutral-300 text-lg mb-4">
-                                No password files found
+                            <div className="text-neutral-400 text-lg mb-4">
+                                No password collections found
                             </div>
-                            <p className="text-neutral-400 mb-6">
-                                Create your first password database to get started
-                            </p>
-                            <button
-                                onClick={onCreateNew}
-                                className="px-8 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-colors"
-                            >
-                                Create Your First File
-                            </button>
                         </div>
                     ) : (
                         <div className="space-y-3">

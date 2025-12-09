@@ -2,47 +2,49 @@ import { useState } from 'react';
 import PasswordFilePicker from './PasswordFilePicker';
 import PasswordFileEditor from './PasswordFileEditor';
 import UnlockDialog from './UnlockDialog';
-import type { PasswoodDatabase } from '../cryptor';
+import type { PasswoodCollection } from '../cryptor';
 
 export default function MainPage() {
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
-    const [database, setDatabase] = useState<PasswoodDatabase | null>(null);
+    const [collection, setCollection] = useState<PasswoodCollection | null>(null);
     const [masterPassword, setMasterPassword] = useState('');
     const [unlockDialogOpen, setUnlockDialogOpen] = useState(false);
-    const [dialogFilename, setDialogFilename] = useState('');
+    const [dialogCollectionName, setDialogCollectionName] = useState('');
     const [isNewFile, setIsNewFile] = useState(false);
 
     const handleFileSelect = (filename: string) => {
-        setDialogFilename(filename);
+        setDialogCollectionName(filename);
         setIsNewFile(false);
         setUnlockDialogOpen(true);
     };
 
     const handleCreateNew = () => {
-        setDialogFilename('new.passwood');
+        setDialogCollectionName('new.pass');
         setIsNewFile(true);
         setUnlockDialogOpen(true);
     };
 
-    const handleUnlocked = (db: PasswoodDatabase, password: string, filename: string) => {
-        setDatabase(db);
+    const handleUnlocked = (col: PasswoodCollection, password: string, filename: string) => {
+        setCollection(col);
         setMasterPassword(password);
         setSelectedFile(filename);
     };
 
     const handleBack = () => {
         setSelectedFile(null);
-        setDatabase(null);
+        setCollection(null);
         setMasterPassword('');
     };
 
-    if (selectedFile && database && masterPassword) {
-        return <PasswordFileEditor
-            filename={selectedFile}
-            initialDatabase={database}
-            initialPassword={masterPassword}
-            onBack={handleBack}
-        />;
+    if (selectedFile && collection && masterPassword) {
+        return (
+            <PasswordFileEditor
+                filename={selectedFile}
+                initialCollection={collection}
+                initialPassword={masterPassword}
+                onBack={handleBack}
+            />
+        );
     }
 
     return (
@@ -51,7 +53,7 @@ export default function MainPage() {
             <UnlockDialog
                 open={unlockDialogOpen}
                 onOpenChange={setUnlockDialogOpen}
-                filename={dialogFilename}
+                collectionName={dialogCollectionName}
                 isNewFile={isNewFile}
                 onUnlocked={handleUnlocked}
             />

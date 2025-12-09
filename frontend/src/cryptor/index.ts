@@ -13,7 +13,8 @@
 export type {
     PasswoodEntry,
     CustomField,
-    PasswoodDatabase,
+    PasswoodCollection,
+    PasswoodDatabase, // Alias for backward compatibility
     PasswoodHeader,
     EncryptedPayload,
     PasswoodFileData

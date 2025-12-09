@@ -4,7 +4,7 @@
  */
 
 import type {
-    PasswoodDatabase,
+    PasswoodCollection,
     PasswoodHeader
 } from './types';
 import {
@@ -24,10 +24,10 @@ const HEADER_SIZE = 256;
 const ENCRYPTION_ALGORITHM_AES_GCM = 1;
 
 /**
- * Encode a PasswoodDatabase into encrypted .passwood file format
+ * Encode a PasswoodCollection into encrypted .passwood file format
  */
 export async function encodePasswoodFile(
-    database: PasswoodDatabase,
+    collection: PasswoodCollection,
     masterPassword: string
 ): Promise<Uint8Array> {
     // Generate cryptographic parameters
@@ -38,8 +38,8 @@ export async function encodePasswoodFile(
     // Derive encryption key
     const encryptionKey = await deriveKey(masterPassword, salt, iterations);
 
-    // Serialize database to JSON
-    const jsonData = JSON.stringify(database);
+    // Serialize collection to JSON
+    const jsonData = JSON.stringify(collection);
 
     // Encrypt the data
     const encryptedBuffer = await encryptData(jsonData, encryptionKey, iv);
@@ -83,12 +83,12 @@ export async function encodePasswoodFile(
 }
 
 /**
- * Decode a .passwood file and decrypt the database
+ * Decode a .passwood file and decrypt the collection
  */
 export async function decodePasswoodFile(
     fileData: Uint8Array,
     masterPassword: string
-): Promise<PasswoodDatabase> {
+): Promise<PasswoodCollection> {
     if (fileData.length < HEADER_SIZE + 12) {
         throw new Error('Invalid file: too small');
     }
@@ -139,10 +139,10 @@ export async function decodePasswoodFile(
 
     // Parse JSON
     try {
-        const database: PasswoodDatabase = JSON.parse(jsonData);
-        return database;
-    } catch (error) {
-        throw new Error('Invalid file: corrupted database structure');
+        const collection: PasswoodCollection = JSON.parse(jsonData);
+        return collection;
+    } catch (err) {
+        throw new Error('Invalid file: corrupted collection structure');
     }
 }
 

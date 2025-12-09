@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react';
+import { Plus } from 'lucide-react';
 import { savePasswordFile, deletePasswordFile } from '../api/passwordApi';
 import { encodePasswoodFile } from '../cryptor';
-import type { PasswoodDatabase, PasswoodEntry } from '../cryptor';
+import type { PasswoodCollection, PasswoodEntry } from '../cryptor';
+import EntryDialog from './EntryDialog';
 import {
     createEntry,
     addEntry,
     updateEntry,
-    deleteEntry as deleteEntryUtil,
-    generatePassword,
-    calculatePasswordStrength
+    deleteEntry as deleteEntryUtil
 } from '../cryptor/utils';
 
 interface PasswordFileEditorProps {
     filename: string;
-    initialDatabase: PasswoodDatabase;
+    initialCollection: PasswoodCollection;
     initialPassword: string;
     onBack: () => void;
 }
 
-export default function PasswordFileEditor({ filename: initialFilename, initialDatabase, initialPassword, onBack }: PasswordFileEditorProps) {
+export default function PasswordFileEditor({ filename: initialFilename, initialCollection, initialPassword, onBack }: PasswordFileEditorProps) {
     const [masterPassword] = useState(initialPassword);
     const [filename] = useState(initialFilename);
-    const [database, setDatabase] = useState<PasswoodDatabase>(initialDatabase);
+    const [collection, setCollection] = useState<PasswoodCollection>(initialCollection);
     const [error, setError] = useState<string | null>(null);
-    const [editingEntry, setEditingEntry] = useState<string | null>(null);
+    const [editingEntry, setEditingEntry] = useState<PasswoodEntry | null>(null);
+    const [showEntryDialog, setShowEntryDialog] = useState(false);
     const [showPassword, setShowPassword] = useState<Set<string>>(new Set());
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
@@ -31,16 +32,6 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
     const [showDropdown, setShowDropdown] = useState(false);
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [showSavePopup, setShowSavePopup] = useState(false);
-
-    // Form state for new/edit entry
-    const [formData, setFormData] = useState({
-        title: '',
-        username: '',
-        password: '',
-        url: '',
-        notes: '',
-        tags: ''
-    });
 
     // Warn before closing tab/window with unsaved changes
     useEffect(() => {
@@ -63,8 +54,8 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
             setError(null);
 
             // Update modified timestamp
-            const updatedDb = { ...database, modified: new Date().toISOString() };
-            setDatabase(updatedDb);
+            const updatedDb = { ...collection, modified: new Date().toISOString() };
+            setCollection(updatedDb);
 
             // Encrypt and save
             const encrypted = await encodePasswoodFile(updatedDb, masterPassword);
@@ -81,7 +72,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
         }
     };
 
-    const handleDeleteDatabase = async () => {
+    const handleDeleteCollection = async () => {
         if (!confirm(`Are you sure you want to delete "${filename}"? This action cannot be undone.`)) {
             return;
         }
@@ -95,97 +86,50 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
         }
     };
 
-    const handleAddEntry = () => {
-        if (!formData.title || !formData.password) {
-            setError('Title and password are required');
-            return;
+    const handleSaveEntry = (data: {
+        title: string;
+        username: string;
+        password: string;
+        url?: string;
+        notes?: string;
+        tags?: string[];
+    }) => {
+        if (editingEntry) {
+            // Update existing entry
+            setCollection(updateEntry(collection, editingEntry.id, data));
+        } else {
+            // Add new entry
+            const entry = createEntry(
+                data.title,
+                data.username,
+                data.password,
+                data.url,
+                data.notes,
+                data.tags
+            );
+            setCollection(addEntry(collection, entry));
         }
-
-        const tags = formData.tags
-            .split(',')
-            .map(t => t.trim())
-            .filter(t => t.length > 0);
-
-        const entry = createEntry(
-            formData.title,
-            formData.username,
-            formData.password,
-            formData.url || undefined,
-            formData.notes || undefined,
-            tags.length > 0 ? tags : undefined
-        );
-
-        setDatabase(addEntry(database, entry));
-        setHasUnsavedChanges(true);
-        resetForm();
-        setError(null);
-    };
-
-    const handleUpdateEntry = (entryId: string) => {
-        if (!formData.title || !formData.password) {
-            setError('Title and password are required');
-            return;
-        }
-
-        const tags = formData.tags
-            .split(',')
-            .map(t => t.trim())
-            .filter(t => t.length > 0);
-
-        setDatabase(updateEntry(database, entryId, {
-            title: formData.title,
-            username: formData.username,
-            password: formData.password,
-            url: formData.url || undefined,
-            notes: formData.notes || undefined,
-            tags: tags.length > 0 ? tags : undefined
-        }));
 
         setHasUnsavedChanges(true);
         setEditingEntry(null);
-        resetForm();
         setError(null);
     };
 
     const handleDeleteEntry = (id: string) => {
         if (confirm('Are you sure you want to delete this entry?')) {
-            setDatabase(deleteEntryUtil(database, id));
+            setCollection(deleteEntryUtil(collection, id));
             setHasUnsavedChanges(true);
         }
     };
 
     const handleEditEntry = (entry: PasswoodEntry) => {
-        setEditingEntry(entry.id);
-        setFormData({
-            title: entry.title,
-            username: entry.username,
-            password: entry.password,
-            url: entry.url || '',
-            notes: entry.notes || '',
-            tags: entry.tags?.join(', ') || ''
-        });
+        setEditingEntry(entry);
+        setShowEntryDialog(true);
     };
 
-    const resetForm = () => {
-        setFormData({
-            title: '',
-            username: '',
-            password: '',
-            url: '',
-            notes: '',
-            tags: ''
-        });
+    const handleNewEntry = () => {
         setEditingEntry(null);
-    };
-
-    const handleGeneratePassword = () => {
-        const newPassword = generatePassword(20, {
-            uppercase: true,
-            lowercase: true,
-            numbers: true,
-            symbols: true
-        });
-        setFormData(prev => ({ ...prev, password: newPassword }));
+        setShowEntryDialog(true);
     };
 
     const toggleShowPassword = (entryId: string) => {
@@ -221,14 +165,14 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
         setSelectedTags(new Set());
     };
 
-    // Get all unique tags from database
+    // Get all unique tags from collection
     const allTags = Array.from(
         new Set(
-            database?.entries.flatMap(entry => entry.tags || []) || []
+            collection?.entries.flatMap(entry => entry.tags || []) || []
         )
     ).sort();
 
-    const filteredEntries = database?.entries.filter(entry => {
+    const filteredEntries = collection?.entries.filter(entry => {
         // Text search filter
         const matchesSearch = !searchQuery || (
             entry.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -262,11 +206,11 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
                             }}
                             className="text-neutral-300 hover:text-neutral-50 flex items-center gap-2"
                         >
-                            ← Back to Files
+                            ← Back to collections
                         </button>
                         <h1 className="text-4xl font-bold text-neutral-50 mt-2">{filename}</h1>
                         <p className="text-neutral-400 mt-1">
-                            {database?.entries.length} {database?.entries.length === 1 ? 'entry' : 'entries'}
+                            {collection?.entries.length} {collection?.entries.length === 1 ? 'entry' : 'entries'}
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
@@ -302,11 +246,11 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
                                         <button
                                             onClick={() => {
                                                 setShowDropdown(false);
-                                                handleDeleteDatabase();
+                                                handleDeleteCollection();
                                             }}
                                             className="w-full px-4 py-3 text-left text-red-400 hover:bg-red-900/30 rounded-lg transition-colors flex items-center gap-2"
                                         >
-                                            <span>Delete Database</span>
+                                            <span>Delete Collection</span>
                                         </button>
                                     </div>
                                 </>
@@ -321,118 +265,25 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Entry Form */}
-                    <div className="lg:col-span-1">
+                {/* Add Entry Button */}
+                <div className="mb-6">
+                    <button
+                        onClick={handleNewEntry}
+                        className="px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all transform hover:scale-105 shadow-lg flex items-center gap-2"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Add New Entry
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-8">
+                    {/* Entries List */}
+                    <div>
                         <div className="bg-neutral-900 rounded-2xl p-6 shadow-xl border border-neutral-800">
                             <h3 className="text-2xl font-semibold text-neutral-50 mb-6">
-                                {editingEntry ? 'Edit Entry' : 'Add New Entry'}
+                                Passwords
                             </h3>
 
-                            <div className="space-y-3">
-                                <input
-                                    type="text"
-                                    placeholder="Title *"
-                                    value={formData.title}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                    className="w-full px-4 py-2 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Username"
-                                    value={formData.username}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, username: e.target.value }))}
-                                    className="w-full px-4 py-2 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                />
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        placeholder="Password *"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                        className="w-full px-4 py-2 pr-24 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                    />
-                                    <button
-                                        onClick={handleGeneratePassword}
-                                        className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-xs rounded transition-colors"
-                                    >
-                                        Generate
-                                    </button>
-                                </div>
-                                {formData.password && (
-                                    <div className="text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <div className="flex-1 h-2 bg-neutral-800 rounded-full overflow-hidden">
-                                                <div
-                                                    className={`h-full transition-all ${calculatePasswordStrength(formData.password) >= 80
-                                                        ? 'bg-green-500'
-                                                        : calculatePasswordStrength(formData.password) >= 50
-                                                            ? 'bg-yellow-500'
-                                                            : 'bg-red-500'
-                                                        }`}
-                                                    style={{ width: `${calculatePasswordStrength(formData.password)}%` }}
-                                                />
-                                            </div>
-                                            <span className="text-neutral-400 text-xs">
-                                                {calculatePasswordStrength(formData.password)}%
-                                            </span>
-                                        </div>
-                                    </div>
-                                )}
-                                <input
-                                    type="text"
-                                    placeholder="URL"
-                                    value={formData.url}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-                                    className="w-full px-4 py-2 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                />
-                                <textarea
-                                    placeholder="Notes"
-                                    value={formData.notes}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                                    rows={3}
-                                    className="w-full px-4 py-2 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50 resize-none"
-                                />
-                                <input
-                                    type="text"
-                                    placeholder="Tags (comma-separated)"
-                                    value={formData.tags}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
-                                    className="w-full px-4 py-2 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                />
-
-                                <div className="flex gap-2 pt-2">
-                                    {editingEntry ? (
-                                        <>
-                                            <button
-                                                onClick={() => handleUpdateEntry(editingEntry)}
-                                                className="flex-1 px-4 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-colors"
-                                            >
-                                                Update
-                                            </button>
-                                            <button
-                                                onClick={resetForm}
-                                                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium transition-colors"
-                                            >
-                                                Cancel
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <button
-                                            onClick={handleAddEntry}
-                                            className="w-full px-4 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium transition-all"
-                                        >
-                                            + Add Entry
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Entries List */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-neutral-900 rounded-2xl p-6 shadow-xl border border-neutral-800">
                             {/* Search Bar */}
                             <div className="mb-4">
                                 <input
@@ -594,6 +445,14 @@ export default function PasswordFileEditor({ filename: initialFilename, initialD
                         Password file saved successfully!
                     </div>
                 )}
+
+                {/* Entry Dialog */}
+                <EntryDialog
+                    open={showEntryDialog}
+                    onOpenChange={setShowEntryDialog}
+                    entry={editingEntry}
+                    onSave={handleSaveEntry}
+                />
             </div>
         </div>
     );

@@ -21,12 +21,15 @@ export interface CustomField {
     type?: 'text' | 'password' | 'url' | 'email';
 }
 
-export interface PasswoodDatabase {
+export interface PasswoodCollection {
     version: string;
     created: string;
     modified: string;
     entries: PasswoodEntry[];
 }
+
+// Backward compatibility alias
+export type PasswoodDatabase = PasswoodCollection;
 
 export interface PasswoodHeader {
     magic: string;           // "PSWD"

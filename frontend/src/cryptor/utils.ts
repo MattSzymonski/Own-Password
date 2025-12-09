@@ -2,13 +2,16 @@
  * Utility functions for Passwood
  */
 
-import type { PasswoodDatabase, PasswoodEntry } from './types';
+import type { PasswoodCollection, PasswoodEntry } from './types';
 import { encodePasswoodFile, decodePasswoodFile } from './format';
 
+// Type alias for backward compatibility
+type PasswoodDatabase = PasswoodCollection;
+
 /**
- * Create a new empty Passwood database
+ * Create a new empty Passwood collection
  */
-export function createEmptyDatabase(): PasswoodDatabase {
+export function createEmptyCollection(): PasswoodCollection {
     const now = new Date().toISOString();
     return {
         version: '1.0.0',
@@ -17,6 +20,9 @@ export function createEmptyDatabase(): PasswoodDatabase {
         entries: []
     };
 }
+
+// Backward compatibility alias
+export const createEmptyDatabase = createEmptyCollection;
 
 /**
  * Generate a unique ID for an entry
@@ -131,7 +137,7 @@ export async function importFromFile(
 /**
  * Download a .passwood file
  */
-export function downloadPasswoodFile(blob: Blob, filename: string = 'passwords.passwood'): void {
+export function downloadPasswoodFile(blob: Blob, filename: string = 'passwords.pass'): void {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
