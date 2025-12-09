@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Eye, EyeOff, ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { PasswoodPassword, Tag } from '../cryptor';
@@ -16,6 +16,35 @@ export default function PasswordEntry({ password, availableTags, onEdit, onDelet
     const [showPassword, setShowPassword] = useState(false);
     const [openDropdown, setOpenDropdown] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const entryRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (isExpanded && entryRef.current) {
+            // Small delay to allow animation to complete
+            setTimeout(() => {
+                const element = entryRef.current;
+                if (!element) return;
+
+                const rect = element.getBoundingClientRect();
+                const container = element.closest('.overflow-y-auto');
+                
+                if (container) {
+                    const containerRect = container.getBoundingClientRect();
+                    const isBottomOutside = rect.bottom > containerRect.bottom;
+                    
+                    // Only scroll if the expanded part is outside the container
+                    if (isBottomOutside) {
+                        // Calculate how much we need to scroll plus 50px offset
+                        const scrollOffset = rect.bottom - containerRect.bottom + 50;
+                        container.scrollBy({ 
+                            top: scrollOffset, 
+                            behavior: 'smooth' 
+                        });
+                    }
+                }
+            }, 300); // Wait for expansion animation
+        }
+    }, [isExpanded]);
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -33,7 +62,7 @@ export default function PasswordEntry({ password, availableTags, onEdit, onDelet
         .filter((tag): tag is Tag => tag !== undefined) || [];
 
     return (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-xl hover:bg-neutral-850 hover:border-neutral-700 transition-all">
+        <div ref={entryRef} className="bg-neutral-900 border border-neutral-800 rounded-xl hover:bg-neutral-850 hover:border-neutral-700 transition-all">
             {/* Header row with expand button, title, and options */}
             <div
                 onClick={() => setIsExpanded(!isExpanded)}

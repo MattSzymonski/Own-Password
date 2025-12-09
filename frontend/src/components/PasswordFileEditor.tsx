@@ -109,6 +109,22 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         tags?: string[];
     }) => {
         if (editingPassword) {
+            // Check if anything actually changed
+            const tagsChanged = JSON.stringify(editingPassword.tags?.sort() || []) !== JSON.stringify(data.tags?.sort() || []);
+            const hasChanges = 
+                editingPassword.title !== data.title ||
+                editingPassword.login !== data.login ||
+                editingPassword.password !== data.password ||
+                (editingPassword.url || '') !== (data.url || '') ||
+                (editingPassword.notes || '') !== (data.notes || '') ||
+                tagsChanged;
+
+            if (!hasChanges) {
+                // Nothing changed, just close the dialog
+                setEditingPassword(null);
+                return;
+            }
+
             // Update existing password
             setCollection(updatePassword(collection, editingPassword.id, data));
         } else {
