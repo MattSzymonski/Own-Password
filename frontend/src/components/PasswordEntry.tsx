@@ -33,7 +33,7 @@ export default function PasswordEntry({ password, availableTags, onEdit, onDelet
         .filter((tag): tag is Tag => tag !== undefined) || [];
 
     return (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-xl">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl hover:bg-neutral-850 hover:border-neutral-700 transition-all">
             {/* Header row with expand button, title, and options */}
             <div
                 onClick={() => setIsExpanded(!isExpanded)}

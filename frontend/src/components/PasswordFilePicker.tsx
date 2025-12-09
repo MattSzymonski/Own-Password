@@ -108,7 +108,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew }: Passwo
                                 <div
                                     key={file.filename}
                                     onClick={() => onFileSelect(file.filename)}
-                                    className="group bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 hover:border-neutral-600 rounded-xl p-5 cursor-pointer transition-all transform hover:scale-[1.02] hover:shadow-xl"
+                                    className="group bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 hover:border-neutral-700 rounded-xl p-5 cursor-pointer transition-all transform hover:scale-[1.02] hover:shadow-xl"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex-1">

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
 import type { PasswoodPassword, Tag } from '../cryptor';
 import { generatePassword, calculatePasswordStrength } from '../cryptor/utils';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import TagPicker from './TagPicker';
+import CustomDialog from './CustomDialog';
 
 interface EntryDialogProps {
     open: boolean;
@@ -88,153 +88,124 @@ export default function EntryDialog({ open, onOpenChange, password, availableTag
     };
 
     return (
-        <Dialog.Root open={open} onOpenChange={onOpenChange}>
-            <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
-                <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800 max-w-lg w-full max-h-[90vh] overflow-y-auto z-50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95">
-                    <Dialog.Title className="text-2xl font-semibold text-neutral-50 mb-6">
-                        {password ? 'Edit Password' : 'Add New Password'}
-                    </Dialog.Title>
+        <CustomDialog open={open} onOpenChange={onOpenChange} title={password ? 'Edit Password' : 'Add New Password'} maxWidth="lg">
+            {error && (
+                <div className="bg-red-900/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-4">
+                    {error}
+                </div>
+            )}
 
-                    {error && (
-                        <div className="bg-red-900/20 border border-red-500 text-red-400 px-4 py-3 rounded-lg mb-4">
-                            {error}
+            <div className="space-y-3">
+                <div>
+                    <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
+                        <span>Title</span>
+                        <span className="text-neutral-600 text-xs">Required</span>
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Enter title"
+                        value={formData.title}
+                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                        className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
+                        autoFocus
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-neutral-300 mb-2 text-sm">Login</label>
+                    <input
+                        type="text"
+                        placeholder="Enter login"
+                        value={formData.login}
+                        onChange={(e) => setFormData(prev => ({ ...prev, login: e.target.value }))}
+                        className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
+                        <span>Password</span>
+                        <span className="text-neutral-600 text-xs">Required</span>
+                    </label>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Enter password"
+                            value={formData.password}
+                            onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                            className="w-full px-4 py-3 pr-28 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
+                        />
+                        <Button
+                            type="button"
+                            onClick={handleGeneratePassword}
+                            size="sm"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-xs rounded font-medium h-auto"
+                        >
+                            Generate
+                        </Button>
+                    </div>
+                    {formData.password && (
+                        <div className="mt-2">
+                            <div className="flex items-center gap-2">
+                                <div className="flex-1 h-2 bg-neutral-800 rounded-full overflow-hidden">
+                                    <div
+                                        className={`h-full transition-all ${calculatePasswordStrength(formData.password) >= 80
+                                            ? 'bg-green-500'
+                                            : calculatePasswordStrength(formData.password) >= 50
+                                                ? 'bg-yellow-500'
+                                                : 'bg-red-500'
+                                            }`}
+                                        style={{ width: `${calculatePasswordStrength(formData.password)}%` }}
+                                    />
+                                </div>
+                                <span className="text-neutral-400 text-xs">
+                                    {calculatePasswordStrength(formData.password)}%
+                                </span>
+                            </div>
                         </div>
                     )}
+                </div>
 
-                    <div className="space-y-3">
-                        <div>
-                            <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
-                                <span>Title</span>
-                                <span className="text-neutral-600 text-xs">Required</span>
-                            </label>
-                            <input
-                                type="text"
-                                placeholder="Enter title"
-                                value={formData.title}
-                                onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                autoFocus
-                            />
-                        </div>
+                <div>
+                    <label className="block text-neutral-300 mb-2 text-sm">URL</label>
+                    <input
+                        type="text"
+                        placeholder="https://example.com"
+                        value={formData.url}
+                        onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
+                        className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
+                    />
+                </div>
 
-                        <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">Login</label>
-                            <input
-                                type="text"
-                                placeholder="Enter login"
-                                value={formData.login}
-                                onChange={(e) => setFormData(prev => ({ ...prev, login: e.target.value }))}
-                                className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                            />
-                        </div>
+                <div>
+                    <label className="block text-neutral-300 mb-2 text-sm">Notes</label>
+                    <textarea
+                        placeholder="Additional notes..."
+                        value={formData.notes}
+                        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                        rows={3}
+                        className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50 resize-none"
+                    />
+                </div>
 
-                        <div>
-                            <label className="block text-neutral-300 mb-2 text-sm flex justify-between items-center">
-                                <span>Password</span>
-                                <span className="text-neutral-600 text-xs">Required</span>
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Enter password"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                                    className="w-full px-4 py-3 pr-28 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                                />
-                                <Button
-                                    type="button"
-                                    onClick={handleGeneratePassword}
-                                    size="sm"
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 text-xs rounded font-medium h-auto"
-                                >
-                                    Generate
-                                </Button>
-                            </div>
-                            {formData.password && (
-                                <div className="mt-2">
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex-1 h-2 bg-neutral-800 rounded-full overflow-hidden">
-                                            <div
-                                                className={`h-full transition-all ${calculatePasswordStrength(formData.password) >= 80
-                                                    ? 'bg-green-500'
-                                                    : calculatePasswordStrength(formData.password) >= 50
-                                                        ? 'bg-yellow-500'
-                                                        : 'bg-red-500'
-                                                    }`}
-                                                style={{ width: `${calculatePasswordStrength(formData.password)}%` }}
-                                            />
-                                        </div>
-                                        <span className="text-neutral-400 text-xs">
-                                            {calculatePasswordStrength(formData.password)}%
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                <div>
+                    <label className="block text-neutral-300 mb-2 text-sm">Tags</label>
+                    <TagPicker
+                        availableTags={availableTags}
+                        selectedTagIds={formData.tagIds}
+                        onTagsChange={(tagIds) => setFormData(prev => ({ ...prev, tagIds }))}
+                    />
+                </div>
 
-                        <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">URL</label>
-                            <input
-                                type="text"
-                                placeholder="https://example.com"
-                                value={formData.url}
-                                onChange={(e) => setFormData(prev => ({ ...prev, url: e.target.value }))}
-                                className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">Notes</label>
-                            <textarea
-                                placeholder="Additional notes..."
-                                value={formData.notes}
-                                onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
-                                rows={3}
-                                className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50 resize-none"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-neutral-300 mb-2 text-sm">Tags</label>
-                            <TagPicker
-                                availableTags={availableTags}
-                                selectedTagIds={formData.tagIds}
-                                onTagsChange={(tagIds) => setFormData(prev => ({ ...prev, tagIds }))}
-                            />
-                        </div>
-
-                        <div className="flex gap-3 pt-4">
-                            <Button
-                                onClick={handleSave}
-                                className="flex-1 px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium"
-                            >
-                                {password ? 'Update' : 'Add Password'}
-                            </Button>
-                            <Button
-                                onClick={() => onOpenChange(false)}
-                                variant="secondary"
-                                className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-50 rounded-lg font-medium"
-                            >
-                                Cancel
-                            </Button>
-                        </div>
-                    </div>
-
-                    <Dialog.Close asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute top-6 right-6 text-neutral-400 hover:text-neutral-50 hover:bg-neutral-800 flex items-center gap-2"
-                            aria-label="Close"
-                        >
-                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                            </svg>
-                        </Button>
-                    </Dialog.Close>
-                </Dialog.Content>
-            </Dialog.Portal>
-        </Dialog.Root>
+                <div className="flex gap-3 pt-4">
+                    <Button
+                        onClick={handleSave}
+                        className="flex-1 px-6 py-3 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium"
+                    >
+                        {password ? 'Update' : 'Add Password'}
+                    </Button>
+                </div>
+            </div>
+        </CustomDialog>
     );
 }

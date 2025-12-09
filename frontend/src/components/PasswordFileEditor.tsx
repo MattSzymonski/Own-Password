@@ -279,7 +279,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                 {/* Save Success Popup */}
                 {showSavePopup && (
                     <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
-                        Password file saved successfully!
+                        Password collection saved successfully!
                     </div>
                 )}
 
