@@ -18,10 +18,12 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
     const [loading, setLoading] = useState(false);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorPopupMessage, setErrorPopupMessage] = useState('');
+    const [unlockSuccess, setUnlockSuccess] = useState(false);
 
     useEffect(() => {
         if (open) {
             setMasterPassword('');
+            setUnlockSuccess(false);
         }
     }, [open]);
 
@@ -30,7 +32,10 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
             setLoading(true);
             const fileData = await downloadPasswordFile(collectionName);
             const db = await decodePasswoodFile(fileData, masterPassword);
-            onUnlocked(db, masterPassword, collectionName);
+            setUnlockSuccess(true);
+            setTimeout(() => {
+                onUnlocked(db, masterPassword, collectionName);
+            }, 400);
         } catch (err) {
             setErrorPopupMessage('Incorrect password');
             setShowErrorPopup(true);
@@ -43,7 +48,7 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
 
     return (
         <>
-            <CustomDialog open={open} onOpenChange={onOpenChange} title="Unlock Collection" maxWidth="sm">
+            <CustomDialog open={open} onOpenChange={onOpenChange} title="Unlock Collection" maxWidth="sm" animateSuccess={unlockSuccess}>
                 <Dialog.Description className="text-lg font-bold text-neutral-50 mb-6" style={{ fontFamily: 'Outfit' }}>
                     {collectionName.replace('.pass', '')}
                     <span className="text-neutral-500">.pass</span>
