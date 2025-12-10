@@ -5,6 +5,7 @@ import { fetchPasswordFiles } from '../api/passwordApi';
 import type { PasswordFileInfo } from '../api/passwordApi';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import { pickLocalFile, saveFileHandle, addLocalFile, getLocalFilesList, isFileSystemAccessSupported, validateAllLocalFiles, removeLocalFile, removeFileHandle } from '../utils/localFiles';
+import { useOnlineStatus } from '../hooks/use-online-status';
 
 interface PasswordFilePickerProps {
     onFileSelect: (filename: string) => void;
@@ -21,7 +22,9 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
     const [showLoadButton, setShowLoadButton] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [showAlreadyAddedPopup, setShowAlreadyAddedPopup] = useState(false);
+    const [showOfflinePopup, setShowOfflinePopup] = useState(false);
     const [addedFilename, setAddedFilename] = useState<string>('');
+    const isOnline = useOnlineStatus();
 
     useEffect(() => {
         // Set document title
@@ -120,15 +123,60 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                 }
             }
         } catch (err) {
-            setError('Failed to pick local file: ' + (err as Error).message);
+            setError('Failed to pick local collection file: ' + (err as Error).message);
         }
     };
+
+    const checkOnlineStatus = async (): Promise<boolean> => {
+        // First check cached status
+        if (!isOnline) {
+            return false;
+        }
+
+        // Perform an immediate server check to be absolutely sure
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
+            const response = await fetch(`${API_BASE_URL}/health`, {
+                method: 'HEAD',
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+            return response.ok;
+        } catch (error) {
+            return false;
+        }
+    };
+
+    const handleCloudFileClick = async (filename: string) => {
+        const online = await checkOnlineStatus();
+        if (!online) {
+            setShowOfflinePopup(true);
+            setTimeout(() => setShowOfflinePopup(false), 2000);
+            return;
+        }
+        onFileSelect(filename);
+    };
+
+    const handleCreateNewClick = async () => {
+        const online = await checkOnlineStatus();
+        if (!online) {
+            setShowOfflinePopup(true);
+            setTimeout(() => setShowOfflinePopup(false), 2000);
+            return;
+        }
+        onCreateNew();
+    };
+
     const hideLogo = import.meta.env.VITE_HIDE_APP_LOGO === 'true' || import.meta.env.HIDE_APP_LOGO === 'true';
 
     return (
-        <div className="min-h-screen bg-neutral-950 p-8">
+        <div className="min-h-screen bg-neutral-950 p-5 md:p-8">
             <div className="max-w-2xl mx-auto">
-                <div className="bg-neutral-900 rounded-2xl p-8 shadow-2xl border border-neutral-800">
+                <div className="bg-neutral-900 rounded-2xl p-5 md:p-8 shadow-2xl border border-neutral-800">
                     <div className="flex justify-between items-center mb-6">
                         <div className="flex items-center gap-2">
                             {onLockApp && (
@@ -158,7 +206,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                                 </Button>
                             )}
                             <Button
-                                onClick={onCreateNew}
+                                onClick={handleCreateNewClick}
                                 className="px-4 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg font-medium flex items-center gap-2"
                             >
                                 <Plus size={20} />
@@ -170,7 +218,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                     <div className="relative">
                         {error ? (
                             <div className="text-center py-12">
-                                <div className="text-red-400 text-xl mb-4">{error}</div>
+                                <div className="text-neutral-400 text-xl mb-4">{error}</div>
                                 <Button
                                     onClick={loadFiles}
                                     className="px-6 py-2 bg-neutral-50 hover:bg-neutral-200 text-neutral-950 rounded-lg">
@@ -285,7 +333,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                                                 damping: 30,
                                                 delay: (localFiles.length * 0.05) + (index * 0.08)
                                             }}
-                                            onClick={() => onFileSelect(file.filename)}
+                                            onClick={() => handleCloudFileClick(file.filename)}
                                             className="group bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 hover:border-neutral-700 rounded-xl p-5 cursor-pointer hover:shadow-xl"
                                         >
                                             <div className="flex items-center justify-between">
@@ -342,6 +390,13 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
             {showAlreadyAddedPopup && (
                 <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
                     "{addedFilename}" is already in your list
+                </div>
+            )}
+
+            {/* Offline Popup */}
+            {showOfflinePopup && (
+                <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
+                    You are offline
                 </div>
             )}
         </div>

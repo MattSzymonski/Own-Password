@@ -34,12 +34,16 @@ export default function PasswordList({
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showTopGradient, setShowTopGradient] = useState(false);
     const [showBottomGradient, setShowBottomGradient] = useState(false);
+    const [hasScroll, setHasScroll] = useState(false);
 
     const handleScroll = () => {
         const container = scrollContainerRef.current;
         if (!container) return;
 
         const { scrollTop, scrollHeight, clientHeight } = container;
+
+        // Check if scrollbar is visible
+        setHasScroll(scrollHeight > clientHeight);
 
         // Show top gradient if scrolled down
         setShowTopGradient(scrollTop > 0);
@@ -69,7 +73,7 @@ export default function PasswordList({
     }, [passwords]);
 
     return (
-        <div className="bg-neutral-900 rounded-2xl p-6 shadow-xl border border-neutral-800 h-full flex flex-col">
+        <div className="bg-neutral-900 rounded-t-2xl md:rounded-2xl p-5 md:p-6 shadow-xl border border-neutral-800 h-full flex flex-col">
             <div className="flex justify-between items-center mb-6 flex-shrink-0">
                 <h3 className="text-3xl font-semibold text-neutral-50">
                     Passwords
@@ -120,7 +124,7 @@ export default function PasswordList({
                     {/* Password list */}
                     <div
                         ref={scrollContainerRef}
-                        className="space-y-3 overflow-y-auto pr-2 h-full"
+                        className={`space-y-3 overflow-y-auto h-full ${hasScroll ? 'pr-2' : ''}`}
                     >
                         <AnimatePresence mode="popLayout">
                             {passwords.map((password, index) => (

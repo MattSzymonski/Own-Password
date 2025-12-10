@@ -14,6 +14,7 @@ import {
     deletePassword as deletePasswordUtil
 } from '../cryptor/utils';
 import { getFileHandle, writeLocalFile, removeFileHandle, removeLocalFile, downloadToLocalFile } from '../utils/localFiles';
+import { useOnlineStatus } from '../hooks/use-online-status';
 
 interface PasswordFileEditorProps {
     filename: string;
@@ -42,6 +43,8 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const [showSavePopup, setShowSavePopup] = useState(false);
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showDownloadPopup, setShowDownloadPopup] = useState(false);
+    const [showOfflinePopup, setShowOfflinePopup] = useState(false);
+    const isOnline = useOnlineStatus();
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean;
         title: string;
@@ -111,9 +114,42 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, [hasUnsavedChanges]);
 
+    const checkOnlineStatus = async (): Promise<boolean> => {
+        if (isLocalFile) {
+            return true; // Local files don't need server
+        }
+
+        if (!isOnline) {
+            return false;
+        }
+
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
+            const response = await fetch(`${API_BASE_URL}/health`, {
+                method: 'HEAD',
+                signal: controller.signal,
+            });
+
+            clearTimeout(timeoutId);
+            return response.ok;
+        } catch (error) {
+            return false;
+        }
+    };
+
     const handleSave = async () => {
         if (!masterPassword) {
             setError('Master password is missing. Please try reopening the file.');
+            return;
+        }
+
+        const online = await checkOnlineStatus();
+        if (!online) {
+            setShowOfflinePopup(true);
+            setTimeout(() => setShowOfflinePopup(false), 2000);
             return;
         }
 
@@ -153,6 +189,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     };
 
     const handleDeleteCollection = async () => {
+        const online = await checkOnlineStatus();
+        if (!online) {
+            setShowOfflinePopup(true);
+            setTimeout(() => setShowOfflinePopup(false), 2000);
+            return;
+        }
+
         setConfirmDialog({
             open: true,
             title: 'Delete Collection',
@@ -258,6 +301,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
             return;
         }
 
+        const online = await checkOnlineStatus();
+        if (!online) {
+            setShowOfflinePopup(true);
+            setTimeout(() => setShowOfflinePopup(false), 2000);
+            return;
+        }
+
         try {
             // Encrypt the current collection
             const encrypted = await encodePasswoodFile(collection, masterPassword);
@@ -352,7 +402,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     };
 
     return (
-        <div className="h-screen bg-neutral-950 p-8 flex flex-col overflow-hidden">
+        <div className="h-screen bg-neutral-950 pb-0 py-5 md:p-8 flex flex-col overflow-hidden">
             <div className="max-w-2xl mx-auto flex flex-col h-full w-full">
                 <EditorHeader
                     filename={filename}
@@ -409,6 +459,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                 {showDownloadPopup && (
                     <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
                         File downloaded successfully
+                    </div>
+                )}
+
+                {/* Offline Popup */}
+                {showOfflinePopup && (
+                    <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
+                        You are offline
                     </div>
                 )}
 

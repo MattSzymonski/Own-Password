@@ -16,6 +16,15 @@ app.use(cors({
 
 app.use(express.json({ limit: '50mb' })); // Increase limit for encrypted files
 
+// Health check endpoint (no auth required)
+app.head('/api/health', (req, res) => {
+  res.status(200).end();
+});
+
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
 // Apply app password authentication middleware to all /api routes
 app.use('/api', verifyAppPassword);
 

@@ -18,7 +18,7 @@ services:
       # Enable app password requirement (frontend flag)
       - VITE_REQUIRE_APP_PASSWORD=true
       # Hide app logo at bottom of page (optional)
-      - VITE_HIDE_APP_LOGO=true
+      - VITE_HIDE_APP_LOGO=false
       # Single collection mode: filename to open directly, skipping collection picker (optional)
       - VITE_SINGLE_COLLECTION_FILE=
     volumes:

@@ -31,7 +31,7 @@ export default function EditorHeader({
     const [showDropdown, setShowDropdown] = useState(false);
 
     return (
-        <div className="mb-8">
+        <div className="mb-8 px-3 md:px-0">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
                     {onBack && (

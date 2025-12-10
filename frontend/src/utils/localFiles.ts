@@ -157,6 +157,13 @@ export async function pickLocalFile(): Promise<{ filename: string; modified: str
             multiple: false
         });
 
+        // Request readwrite permission immediately when picking the file
+        const permission = await fileHandle.requestPermission({ mode: 'readwrite' });
+
+        if (permission === 'denied') {
+            throw new Error('Permission to access file was denied. Please grant permission to use this file.');
+        }
+
         // Get modification date
         const file = await fileHandle.getFile();
         const modified = new Date(file.lastModified).toISOString();

@@ -60,7 +60,7 @@ export default function CustomDialog({
                             ease: "easeInOut",
                             times: animateSuccess ? [0, 0.3, 0.6, 1] : undefined
                         }}
-                        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-8 shadow-2xl border ${overlayOpacity === 'light' ? 'border-neutral-700' : 'border-neutral-800'} ${maxWidthClasses[maxWidth]} w-[calc(100%-34px)] max-h-[calc(100vh-34px)] overflow-y-auto ${zIndexClass} resize-none focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300`}
+                        className={`fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-900 rounded-2xl p-6 md:p-8 shadow-2xl border ${overlayOpacity === 'light' ? 'border-neutral-700' : 'border-neutral-800'} ${maxWidthClasses[maxWidth]} w-[calc(100%-34px)] max-h-[calc(100vh-34px)] overflow-y-auto ${zIndexClass} resize-none focus:outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 duration-300`}
                     >
                         <div className="relative mb-6">
                             {title && (
