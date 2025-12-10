@@ -16,7 +16,7 @@ interface UnlockDialogProps {
 }
 
 export default function UnlockDialog({ open, onOpenChange, collectionName, onUnlocked }: UnlockDialogProps) {
-    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
+    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION_FILE || import.meta.env.SINGLE_COLLECTION_FILE;
     const isSingleCollection = singleCollection && singleCollection.trim() !== '';
 
     const [masterPassword, setMasterPassword] = useState('');

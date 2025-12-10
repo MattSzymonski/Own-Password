@@ -10,7 +10,7 @@ import { isAppPasswordRequired, setAppPassword, getAppPassword, clearAppPassword
 import { getLocalFilesList } from '../utils/localFiles';
 
 export default function MainPage() {
-    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
+    const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION_FILE || import.meta.env.SINGLE_COLLECTION_FILE;
     const hasSingleCollection = singleCollection && singleCollection.trim() !== '';
     const hideLogo = import.meta.env.VITE_HIDE_APP_LOGO === 'true' || import.meta.env.HIDE_APP_LOGO === 'true';
 

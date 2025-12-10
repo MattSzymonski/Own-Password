@@ -19,10 +19,8 @@ services:
       - VITE_REQUIRE_APP_PASSWORD=true
       # Hide app logo at bottom of page (optional)
       - VITE_HIDE_APP_LOGO=true
-      # Custom app name to display instead of logo (optional)
-      - VITE_APP_NAME=
       # Single collection mode: filename to open directly, skipping collection picker (optional)
-      - VITE_SINGLE_COLLECTION=
+      - VITE_SINGLE_COLLECTION_FILE=
     volumes:
       # To develop and enable hot reload
       - ./frontend:/app/frontend

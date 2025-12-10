@@ -24,8 +24,8 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
     const [addedFilename, setAddedFilename] = useState<string>('');
 
     useEffect(() => {
-        // Set document title based on environment variable
-        document.title = import.meta.env.VITE_APP_NAME || import.meta.env.APP_NAME || 'Own Password';
+        // Set document title
+        document.title = 'Own Password';
     }, []);
 
     useEffect(() => {
