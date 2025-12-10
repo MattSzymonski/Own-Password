@@ -5,6 +5,7 @@ import PasswordFileEditor from './PasswordFileEditor';
 import UnlockDialog from './UnlockDialog';
 import CreateCollectionDialog from './CreateCollectionDialog';
 import AppUnlockDialog from './AppUnlockDialog';
+import OfflineIndicator from './OfflineIndicator';
 import type { PasswoodCollection } from '../cryptor';
 import { isAppPasswordRequired, setAppPassword, getAppPassword, clearAppPassword } from '../utils/auth';
 import { getLocalFilesList } from '../utils/localFiles';
@@ -94,6 +95,7 @@ export default function MainPage() {
     if (!appUnlocked) {
         return (
             <div className="bg-black min-h-screen relative flex flex-col">
+                <OfflineIndicator />
                 <AppUnlockDialog open={true} onUnlocked={handleAppUnlocked} />
 
                 {/* Logo at bottom of page */}
@@ -125,6 +127,7 @@ export default function MainPage() {
 
     return (
         <div className="bg-black min-h-screen relative">
+            <OfflineIndicator />
             <AnimatePresence mode="wait">
                 {selectedFile && collection && masterPassword ? (
                     <motion.div
