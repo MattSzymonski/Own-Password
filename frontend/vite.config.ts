@@ -9,7 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicons/**/*', 'fonts/**/*', 'images/**/*'],
       manifest: {
         name: 'Own Password',
@@ -17,32 +17,49 @@ export default defineConfig({
         description: 'Secure offline password manager',
         theme_color: '#090909',
         background_color: '#000000',
-        display: 'standalone',
+        display: 'fullscreen',
         start_url: '/',
         scope: '/',
+        orientation: 'any',
         icons: [
           {
-            src: '/favicons/icon-192x192.png',
+            src: '/favicons/web-app-manifest-192x192.png',
             sizes: '192x192',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
           },
           {
-            src: '/favicons/icon-512x512.png',
+            src: '/favicons/web-app-manifest-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
+          },
+          {
+            src: '/favicons/web-app-manifest-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable'
+            purpose: 'any'
+          },
+          {
+            src: '/favicons/web-app-manifest-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+        navigateFallback: null, // Disable navigate fallback completely
+        navigateFallbackDenylist: [/^\/api\//], // Don't serve index.html for API routes
         runtimeCaching: [
           {
-            urlPattern: /^http:\/\/localhost:3010\/.*/i,
+            // Match API routes (both localhost and production)
+            urlPattern: /^https?:\/\/[^/]+\/api\/.*/i,
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
+              networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days

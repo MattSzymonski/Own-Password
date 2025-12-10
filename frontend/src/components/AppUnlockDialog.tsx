@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import * as Dialog from '@radix-ui/react-dialog';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import CustomDialog from './CustomDialog';
