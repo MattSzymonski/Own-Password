@@ -13,15 +13,17 @@ import {
     updatePassword,
     deletePassword as deletePasswordUtil
 } from '../cryptor/utils';
+import { getFileHandle, writeLocalFile, removeFileHandle, removeLocalFile } from '../utils/localFiles';
 
 interface PasswordFileEditorProps {
     filename: string;
     initialCollection: PasswoodCollection;
     initialPassword: string;
+    isLocalFile: boolean;
     onBack: () => void;
 }
 
-export default function PasswordFileEditor({ filename: initialFilename, initialCollection, initialPassword, onBack }: PasswordFileEditorProps) {
+export default function PasswordFileEditor({ filename: initialFilename, initialCollection, initialPassword, isLocalFile, onBack }: PasswordFileEditorProps) {
     const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
     const isSingleCollection = singleCollection && singleCollection.trim() !== '';
 
@@ -29,6 +31,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const [filename] = useState(initialFilename);
     const [collection, setCollection] = useState<PasswoodCollection>(initialCollection);
     const [error, setError] = useState<string | null>(null);
+    const [mounted, setMounted] = useState(false);
     const [editingPassword, setEditingPassword] = useState<PasswoodPassword | null>(null);
     const [showEntryDialog, setShowEntryDialog] = useState(false);
     const [showTagsDialog, setShowTagsDialog] = useState(false);
@@ -45,6 +48,17 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         onConfirm: () => void;
         danger?: boolean;
     }>({ open: false, title: '', message: '', onConfirm: () => { } });
+
+    // Delay mounting PasswordList until after page transition
+    useEffect(() => {
+        const timer = setTimeout(() => setMounted(true), 600);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Sync masterPassword when initialPassword prop changes
+    useEffect(() => {
+        setMasterPassword(initialPassword);
+    }, [initialPassword]);
 
     // Clear master password from memory on unmount
     useEffect(() => {
@@ -97,7 +111,10 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     }, [hasUnsavedChanges]);
 
     const handleSave = async () => {
-        if (!masterPassword) return;
+        if (!masterPassword) {
+            setError('Master password is missing. Please try reopening the file.');
+            return;
+        }
 
         try {
             setSaving(true);
@@ -109,13 +126,26 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
 
             // Encrypt and save
             const encrypted = await encodePasswoodFile(updatedDb, masterPassword);
-            await savePasswordFile(filename, encrypted);
+
+            if (isLocalFile) {
+                // Save to local file
+                const handle = await getFileHandle(filename);
+                if (handle) {
+                    await writeLocalFile(handle, encrypted);
+                } else {
+                    throw new Error('File handle not found');
+                }
+            } else {
+                // Save to server
+                await savePasswordFile(filename, encrypted);
+            }
 
             setHasUnsavedChanges(false);
             setShowSavePopup(true);
             setTimeout(() => setShowSavePopup(false), 2000);
         } catch (err) {
-            setError('Failed to save password file');
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            setError(`Failed to save password file: ${errorMessage}`);
         } finally {
             setSaving(false);
         }
@@ -129,7 +159,14 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
             danger: true,
             onConfirm: async () => {
                 try {
-                    await deletePasswordFile(filename);
+                    if (isLocalFile) {
+                        // Remove from local file list
+                        await removeFileHandle(filename);
+                        removeLocalFile(filename);
+                    } else {
+                        // Delete from server
+                        await deletePasswordFile(filename);
+                    }
                     onBack();
                 } catch (err) {
                     setError('Failed to delete password file');
@@ -297,6 +334,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     passwordCount={collection?.passwords?.length || 0}
                     hasUnsavedChanges={hasUnsavedChanges}
                     saving={saving}
+                    hideDelete={isLocalFile}
                     onBack={isSingleCollection ? undefined : handleBackClick}
                     onSave={handleSave}
                     onDeleteCollection={handleDeleteCollection}
@@ -310,18 +348,20 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                 )}
 
                 <div className="flex-1 overflow-hidden">
-                    <PasswordList
-                        passwords={filteredPasswords}
-                        searchQuery={searchQuery}
-                        availableTags={collection.tags || []}
-                        availableTagsForFilter={availableTagsForFilter}
-                        selectedTags={selectedTags}
-                        onSearchChange={setSearchQuery}
-                        onToggleTag={toggleTagFilter}
-                        onAddNew={handleNewPassword}
-                        onEdit={handleEditPassword}
-                        onDelete={handleDeletePassword}
-                    />
+                    {mounted && (
+                        <PasswordList
+                            passwords={filteredPasswords}
+                            searchQuery={searchQuery}
+                            availableTags={collection.tags || []}
+                            availableTagsForFilter={availableTagsForFilter}
+                            selectedTags={selectedTags}
+                            onSearchChange={setSearchQuery}
+                            onToggleTag={toggleTagFilter}
+                            onAddNew={handleNewPassword}
+                            onEdit={handleEditPassword}
+                            onDelete={handleDeletePassword}
+                        />
+                    )}
                 </div>
 
                 {/* Save Success Popup */}

@@ -123,17 +123,18 @@ export default function PasswordList({
                         className="space-y-3 overflow-y-auto pr-2 h-full"
                     >
                         <AnimatePresence mode="popLayout">
-                            {passwords.map((password) => (
+                            {passwords.map((password, index) => (
                                 <motion.div
                                     key={password.id}
                                     layout
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{
-                                        layout: { duration: 0.3, ease: "easeInOut" },
-                                        opacity: { duration: 0.2 },
-                                        scale: { duration: 0.2 }
+                                        type: 'spring',
+                                        stiffness: 500,
+                                        damping: 30,
+                                        delay: index * 0.04
                                     }}
                                 >
                                     <PasswordEntry

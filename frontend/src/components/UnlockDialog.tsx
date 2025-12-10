@@ -5,6 +5,7 @@ import { decodePasswoodFile } from '../cryptor';
 import type { PasswoodCollection } from '../cryptor';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import CustomDialog from './CustomDialog';
+import { getLocalFilesList, getFileHandle, readLocalFile } from '../utils/localFiles';
 
 interface UnlockDialogProps {
     open: boolean;
@@ -35,7 +36,27 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
     const handleUnlock = async () => {
         try {
             setLoading(true);
-            const fileData = await downloadPasswordFile(collectionName);
+
+            // Check if this is a local file
+            const localFiles = getLocalFilesList();
+            const isLocalFile = localFiles.some(f => {
+                const fname = typeof f === 'string' ? f : f.filename;
+                return fname === collectionName;
+            });
+
+            let fileData: Uint8Array;
+            if (isLocalFile) {
+                // Load from local file
+                const handle = await getFileHandle(collectionName);
+                if (!handle) {
+                    throw new Error('File handle not found. Please pick the file again.');
+                }
+                fileData = await readLocalFile(handle);
+            } else {
+                // Load from server
+                fileData = await downloadPasswordFile(collectionName);
+            }
+
             const db = await decodePasswoodFile(fileData, masterPassword);
             setUnlockSuccess(true);
             setTimeout(() => {
@@ -44,9 +65,17 @@ export default function UnlockDialog({ open, onOpenChange, collectionName, onUnl
         } catch (err) {
             setUnlockError(true);
             setTimeout(() => setUnlockError(false), 500);
-            setErrorPopupMessage('Incorrect password');
+
+            // Check if it's a permission or file access error
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            if (errorMessage.includes('Permission') || errorMessage.includes('File handle not found')) {
+                setErrorPopupMessage(errorMessage);
+            } else {
+                setErrorPopupMessage('Incorrect password');
+            }
+
             setShowErrorPopup(true);
-            setTimeout(() => setShowErrorPopup(false), 2000);
+            setTimeout(() => setShowErrorPopup(false), 3000);
         } finally {
             setLoading(false);
         }

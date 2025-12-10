@@ -7,6 +7,7 @@ import CreateCollectionDialog from './CreateCollectionDialog';
 import AppUnlockDialog from './AppUnlockDialog';
 import type { PasswoodCollection } from '../cryptor';
 import { isAppPasswordRequired, setAppPassword, getAppPassword, clearAppPassword } from '../utils/auth';
+import { getLocalFilesList } from '../utils/localFiles';
 
 export default function MainPage() {
     const singleCollection = import.meta.env.VITE_SINGLE_COLLECTION || import.meta.env.SINGLE_COLLECTION;
@@ -15,6 +16,7 @@ export default function MainPage() {
 
     const [appUnlocked, setAppUnlocked] = useState(!isAppPasswordRequired() || !!getAppPassword());
     const [selectedFile, setSelectedFile] = useState<string | null>(null);
+    const [isLocalFile, setIsLocalFile] = useState(false);
     const [collection, setCollection] = useState<PasswoodCollection | null>(null);
     const [masterPassword, setMasterPassword] = useState('');
     const [unlockDialogOpen, setUnlockDialogOpen] = useState(false);
@@ -31,6 +33,11 @@ export default function MainPage() {
     }, [appUnlocked, hasSingleCollection, singleCollection, selectedFile, unlockDialogOpen]);
 
     const handleFileSelect = (filename: string) => {
+        const localFiles = getLocalFilesList();
+        setIsLocalFile(localFiles.some(f => {
+            const fname = typeof f === 'string' ? f : f.filename;
+            return fname === filename;
+        }));
         setDialogCollectionName(filename);
         setUnlockDialogOpen(true);
     };
@@ -55,6 +62,7 @@ export default function MainPage() {
         setIsTransitioning(true);
         setTimeout(() => {
             setSelectedFile(null);
+            setIsLocalFile(false);
             setCollection(null);
             setMasterPassword(''); // Clear from state
             setIsTransitioning(false);
@@ -129,6 +137,7 @@ export default function MainPage() {
                             filename={selectedFile}
                             initialCollection={collection}
                             initialPassword={masterPassword}
+                            isLocalFile={isLocalFile}
                             onBack={handleBack}
                         />
                     </motion.div>

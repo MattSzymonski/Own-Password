@@ -7,6 +7,7 @@ interface EditorHeaderProps {
     passwordCount: number;
     hasUnsavedChanges: boolean;
     saving: boolean;
+    hideDelete?: boolean;
     onBack?: () => void;
     onSave: () => void;
     onDeleteCollection: () => void;
@@ -17,6 +18,7 @@ export default function EditorHeader({
     filename,
     hasUnsavedChanges,
     saving,
+    hideDelete,
     onBack,
     onSave,
     onDeleteCollection,
@@ -94,17 +96,19 @@ export default function EditorHeader({
                                         >
                                             <span>Manage Tags</span>
                                         </Button>
-                                        <Button
-                                            onClick={() => {
-                                                setShowDropdown(false);
-                                                onDeleteCollection();
-                                            }}
-                                            variant="ghost"
-                                            tapScale={1}
-                                            className="w-full px-4 py-2.5 text-left text-red-400 hover:text-red-300 hover:bg-transparent rounded-b-lg flex items-center gap-2 h-auto justify-start"
-                                        >
-                                            <span>Delete Collection</span>
-                                        </Button>
+                                        {!hideDelete && (
+                                            <Button
+                                                onClick={() => {
+                                                    setShowDropdown(false);
+                                                    onDeleteCollection();
+                                                }}
+                                                variant="ghost"
+                                                tapScale={1}
+                                                className="w-full px-4 py-2.5 text-left text-red-400 hover:text-red-300 hover:bg-transparent rounded-b-lg flex items-center gap-2 h-auto justify-start"
+                                            >
+                                                <span>Delete Collection</span>
+                                            </Button>
+                                        )}
                                     </motion.div>
                                 </>
                             )}
