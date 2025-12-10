@@ -13,7 +13,7 @@ import {
     updatePassword,
     deletePassword as deletePasswordUtil
 } from '../cryptor/utils';
-import { getFileHandle, writeLocalFile, removeFileHandle, removeLocalFile } from '../utils/localFiles';
+import { getFileHandle, writeLocalFile, removeFileHandle, removeLocalFile, downloadToLocalFile } from '../utils/localFiles';
 
 interface PasswordFileEditorProps {
     filename: string;
@@ -41,6 +41,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
     const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
     const [showSavePopup, setShowSavePopup] = useState(false);
     const [showAddPopup, setShowAddPopup] = useState(false);
+    const [showDownloadPopup, setShowDownloadPopup] = useState(false);
     const [confirmDialog, setConfirmDialog] = useState<{
         open: boolean;
         title: string;
@@ -251,6 +252,30 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
         setShowTagsDialog(true);
     };
 
+    const handleDownload = async () => {
+        if (!masterPassword) {
+            setError('Master password is missing. Please try reopening the file.');
+            return;
+        }
+
+        try {
+            // Encrypt the current collection
+            const encrypted = await encodePasswoodFile(collection, masterPassword);
+
+            // Prompt user to save file
+            const success = await downloadToLocalFile(filename, encrypted);
+
+            if (success) {
+                // Show download success notification
+                setShowDownloadPopup(true);
+                setTimeout(() => setShowDownloadPopup(false), 2000);
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            setError(`Failed to download file: ${errorMessage}`);
+        }
+    };
+
     const handleSaveTags = (tags: Tag[], renamedTags: { oldName: string; newName: string }[], deletedTagNames: string[]) => {
         let updatedPasswords = [...collection.passwords];
 
@@ -334,11 +359,13 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                     passwordCount={collection?.passwords?.length || 0}
                     hasUnsavedChanges={hasUnsavedChanges}
                     saving={saving}
+                    isLocalFile={isLocalFile}
                     hideDelete={isLocalFile}
                     onBack={isSingleCollection ? undefined : handleBackClick}
                     onSave={handleSave}
                     onDeleteCollection={handleDeleteCollection}
                     onManageTags={handleManageTags}
+                    onDownload={!isLocalFile ? handleDownload : undefined}
                 />
 
                 {error && (
@@ -367,14 +394,21 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
                 {/* Save Success Popup */}
                 {showSavePopup && (
                     <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
-                        Password collection saved successfully!
+                        Password collection saved successfully
                     </div>
                 )}
 
                 {/* Add Password Success Popup */}
                 {showAddPopup && (
                     <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
-                        Password added successfully!
+                        Password added successfully
+                    </div>
+                )}
+
+                {/* Download Success Popup */}
+                {showDownloadPopup && (
+                    <div className="fixed top-8 left-1/2 -translate-x-1/2 bg-neutral-50 text-neutral-950 px-6 py-4 rounded-lg shadow-2xl z-[9999] animate-in fade-in slide-in-from-top-4 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:slide-out-to-top-4 duration-300">
+                        File downloaded successfully
                     </div>
                 )}
 

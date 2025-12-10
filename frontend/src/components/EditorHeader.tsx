@@ -7,22 +7,26 @@ interface EditorHeaderProps {
     passwordCount: number;
     hasUnsavedChanges: boolean;
     saving: boolean;
+    isLocalFile: boolean;
     hideDelete?: boolean;
     onBack?: () => void;
     onSave: () => void;
     onDeleteCollection: () => void;
     onManageTags: () => void;
+    onDownload?: () => void;
 }
 
 export default function EditorHeader({
     filename,
     hasUnsavedChanges,
     saving,
+    isLocalFile,
     hideDelete,
     onBack,
     onSave,
     onDeleteCollection,
-    onManageTags
+    onManageTags,
+    onDownload
 }: EditorHeaderProps) {
     const [showDropdown, setShowDropdown] = useState(false);
 
@@ -85,6 +89,24 @@ export default function EditorHeader({
                                         transition={{ duration: 0.15, ease: 'easeOut' }}
                                         className="absolute right-0 mt-2 w-48 bg-neutral-900 border border-neutral-700 rounded-lg shadow-xl z-20"
                                     >
+                                        {!isLocalFile && onDownload && (
+                                            <Button
+                                                onClick={() => {
+                                                    setShowDropdown(false);
+                                                    onDownload();
+                                                }}
+                                                variant="ghost"
+                                                tapScale={1}
+                                                className="w-full px-4 py-2.5 text-left text-neutral-400 hover:text-neutral-50 hover:bg-transparent rounded-t-lg flex items-center gap-2 h-auto justify-start"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="flex-shrink-0">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                    <polyline points="7 10 12 15 17 10" />
+                                                    <line x1="12" y1="15" x2="12" y2="3" />
+                                                </svg>
+                                                <span>Download</span>
+                                            </Button>
+                                        )}
                                         <Button
                                             onClick={() => {
                                                 setShowDropdown(false);
@@ -92,7 +114,7 @@ export default function EditorHeader({
                                             }}
                                             variant="ghost"
                                             tapScale={1}
-                                            className="w-full px-4 py-2.5 text-left text-neutral-400 hover:text-neutral-50 hover:bg-transparent rounded-t-lg flex items-center gap-2 h-auto justify-start"
+                                            className={`w-full px-4 py-2.5 text-left text-neutral-400 hover:text-neutral-50 hover:bg-transparent flex items-center gap-2 h-auto justify-start ${!isLocalFile && onDownload ? '' : 'rounded-t-lg'}`}
                                         >
                                             <span>Manage Tags</span>
                                         </Button>

@@ -12,6 +12,13 @@ declare global {
             }>;
             multiple?: boolean;
         }): Promise<FileSystemFileHandle[]>;
+        showSaveFilePicker(options?: {
+            suggestedName?: string;
+            types?: Array<{
+                description: string;
+                accept: Record<string, string[]>;
+            }>;
+        }): Promise<FileSystemFileHandle>;
     }
 
     interface FileSystemFileHandle {
@@ -252,4 +259,33 @@ export async function validateAllLocalFiles(): Promise<Map<string, boolean>> {
     );
 
     return statusMap;
+}
+
+// Download online file to local system
+export async function downloadToLocalFile(filename: string, data: Uint8Array): Promise<boolean> {
+    if (!('showSaveFilePicker' in window)) {
+        throw new Error('File System Access API is not supported in this browser');
+    }
+
+    try {
+        const handle = await window.showSaveFilePicker({
+            suggestedName: filename,
+            types: [{
+                description: 'Password Files',
+                accept: { 'application/octet-stream': ['.pass'] }
+            }]
+        });
+
+        const writable = await handle.createWritable();
+        await writable.write(new Blob([data as unknown as BlobPart]));
+        await writable.close();
+
+        return true;
+    } catch (err) {
+        // User cancelled
+        if ((err as Error).name === 'AbortError') {
+            return false;
+        }
+        throw err;
+    }
 }
