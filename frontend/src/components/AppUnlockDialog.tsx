@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import CustomDialog from './CustomDialog';
 
@@ -10,6 +11,7 @@ interface AppUnlockDialogProps {
 
 export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogProps) {
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
     const [errorPopupMessage, setErrorPopupMessage] = useState('');
@@ -77,15 +79,24 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
                         <label className="block text-neutral-300 mb-2 text-sm">
                             App Password
                         </label>
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
-                            className="w-full px-4 py-3 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
-                            placeholder="Enter app password"
-                            autoFocus
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
+                                className="w-full px-4 py-3 pr-12 bg-neutral-950 border border-neutral-700 rounded-lg text-neutral-50 placeholder-neutral-500 focus:outline-none focus:border-neutral-50"
+                                placeholder="Enter app password"
+                                autoFocus
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-neutral-400 active:scale-95 transition-all duration-200 cursor-pointer"
+                            >
+                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="pt-4">

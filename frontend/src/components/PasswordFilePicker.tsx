@@ -216,8 +216,8 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                                                     delay: index * 0.05
                                                 }}
                                                 onClick={() => isAccessible && onFileSelect(filename)}
-                                                className={`group border rounded-xl p-5 transform ${isAccessible
-                                                    ? 'bg-neutral-900 hover:bg-neutral-850 border-neutral-800 hover:border-neutral-700 cursor-pointer hover:scale-[1.02] hover:shadow-xl'
+                                                className={`group border rounded-xl p-5 ${isAccessible
+                                                    ? 'bg-neutral-900 hover:bg-neutral-850 border-neutral-800 hover:border-neutral-700 cursor-pointer hover:shadow-xl'
                                                     : 'bg-neutral-900/50 border-red-900/50 cursor-not-allowed opacity-60'
                                                     }`}
                                             >
@@ -286,7 +286,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
                                                 delay: (localFiles.length * 0.05) + (index * 0.08)
                                             }}
                                             onClick={() => onFileSelect(file.filename)}
-                                            className="group bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 hover:border-neutral-700 rounded-xl p-5 cursor-pointer transform hover:scale-[1.02] hover:shadow-xl"
+                                            className="group bg-neutral-900 hover:bg-neutral-850 border border-neutral-800 hover:border-neutral-700 rounded-xl p-5 cursor-pointer hover:shadow-xl"
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex-1">
