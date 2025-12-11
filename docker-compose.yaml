@@ -11,6 +11,7 @@ services:
     environment:
       - NODE_ENV=production
       - FRONTEND_URL=https://pass.campfire-on-the-wall.com
+      - BACKEND_URL=https://pass.campfire-on-the-wall.com/api
       # Path to file containing app password (backend only)
       - APP_PASSWORD_FILE=
       # Enable app password requirement (frontend flag, set to 'true' to enable)

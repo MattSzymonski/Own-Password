@@ -12,6 +12,7 @@ services:
     environment:
       - NODE_ENV=development
       - FRONTEND_URL=http://localhost:5180
+      - VITE_BACKEND_URL=http://localhost:3010/api
       #- FRONTEND_URL=https://dev.campfire-on-the-wall.com # use actual domain when exposed
       # Path to file containing app password (backend only)
       - APP_PASSWORD_FILE=/app/data/passwords/own_password_app

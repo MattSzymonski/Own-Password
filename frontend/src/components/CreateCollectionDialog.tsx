@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { savePasswordFile } from '../api/passwordApi';
+import { savePasswordFile } from '../utils/passwordApi';
 import { encodePasswoodFile } from '../cryptor';
 import { createEmptyCollection } from '../cryptor/utils';
 import type { PasswoodCollection } from '../cryptor';

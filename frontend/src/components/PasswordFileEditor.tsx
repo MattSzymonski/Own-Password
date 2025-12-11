@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { savePasswordFile, deletePasswordFile } from '../api/passwordApi';
+import { savePasswordFile, deletePasswordFile } from '../utils/passwordApi';
 import { encodePasswoodFile } from '../cryptor';
 import type { PasswoodCollection, PasswoodPassword, Tag } from '../cryptor';
 import EntryDialog from './EntryDialog';
@@ -15,6 +15,7 @@ import {
 } from '../cryptor/utils';
 import { getFileHandle, writeLocalFile, removeFileHandle, removeLocalFile, downloadToLocalFile } from '../utils/localFiles';
 import { useOnlineStatus } from '../hooks/use-online-status';
+import { BACKEND_API_URL } from '@/utils/constants';
 
 interface PasswordFileEditorProps {
     filename: string;
@@ -127,8 +128,7 @@ export default function PasswordFileEditor({ filename: initialFilename, initialC
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
-            const response = await fetch(`${API_BASE_URL}/health`, {
+            const response = await fetch(`${BACKEND_API_URL}/health`, {
                 method: 'HEAD',
                 signal: controller.signal,
             });

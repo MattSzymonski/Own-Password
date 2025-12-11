@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import CustomDialog from './CustomDialog';
+import { BACKEND_API_URL } from '@/utils/constants';
 
 interface AppUnlockDialogProps {
     open: boolean;
@@ -37,7 +38,7 @@ export default function AppUnlockDialog({ open, onUnlocked }: AppUnlockDialogPro
             setLoading(true);
 
             // Verify with backend by making a test request
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3010/api'}/password_files`, {
+            const response = await fetch(`${BACKEND_API_URL}/password_files`, {
                 headers: {
                     'x-app-password': password,
                 },

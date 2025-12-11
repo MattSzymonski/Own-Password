@@ -2,9 +2,9 @@
  * API client for password file operations
  */
 
-import { getAppPassword } from '../utils/auth';
+import { getAppPassword } from './auth';
+import { BACKEND_API_URL } from './constants';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
 
 /**
  * Get headers with app password if required
@@ -36,7 +36,7 @@ export interface PasswordFilesResponse {
  * Fetch list of password files from backend
  */
 export async function fetchPasswordFiles(): Promise<PasswordFilesResponse> {
-    const response = await fetch(`${API_BASE_URL}/password_files`, {
+    const response = await fetch(`${BACKEND_API_URL}/password_files`, {
         headers: getHeaders(),
     });
     if (!response.ok) {
@@ -49,7 +49,7 @@ export async function fetchPasswordFiles(): Promise<PasswordFilesResponse> {
  * Download a password file from backend
  */
 export async function downloadPasswordFile(filename: string): Promise<Uint8Array> {
-    const response = await fetch(`${API_BASE_URL}/password_files/${filename}`, {
+    const response = await fetch(`${BACKEND_API_URL}/password_files/${filename}`, {
         headers: getHeaders(),
     });
     if (!response.ok) {
@@ -66,7 +66,7 @@ export async function savePasswordFile(filename: string, data: Uint8Array): Prom
     // Convert Uint8Array to base64
     const base64 = btoa(String.fromCharCode(...data));
 
-    const response = await fetch(`${API_BASE_URL}/password_files/${filename}`, {
+    const response = await fetch(`${BACKEND_API_URL}/password_files/${filename}`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify({ data: base64 }),
@@ -81,7 +81,7 @@ export async function savePasswordFile(filename: string, data: Uint8Array): Prom
  * Delete a password file from backend
  */
 export async function deletePasswordFile(filename: string): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/password_files/${filename}`, {
+    const response = await fetch(`${BACKEND_API_URL}/password_files/${filename}`, {
         method: 'DELETE',
         headers: getHeaders(),
     });

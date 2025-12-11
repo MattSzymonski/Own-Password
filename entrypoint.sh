@@ -4,7 +4,8 @@ if [ "$NODE_ENV" = "production" ]; then
   echo "🔧 Injecting frontend environment variables into built frontend files..."
   
   # List of frontend environment variables to inject
-  FRONTEND_VARS="APP_NAME REQUIRE_APP_PASSWORD HIDE_APP_LOGO SINGLE_COLLECTION"
+  # Ensure these match docker-compose env keys
+  FRONTEND_VARS="APP_NAME REQUIRE_APP_PASSWORD HIDE_APP_LOGO SINGLE_COLLECTION_FILE BACKEND_URL"
   
   for var in $FRONTEND_VARS; do
     value=$(eval echo \$$var)

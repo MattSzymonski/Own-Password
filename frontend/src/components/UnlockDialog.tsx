@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import { Eye, EyeOff } from 'lucide-react';
-import { downloadPasswordFile } from '../api/passwordApi';
+import { downloadPasswordFile } from '../utils/passwordApi';
 import { decodePasswoodFile } from '../cryptor';
 import type { PasswoodCollection } from '../cryptor';
 import { Button } from '@/components/animate-ui/components/buttons/button';

@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Plus, Cloud, HardDrive } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { fetchPasswordFiles } from '../api/passwordApi';
-import type { PasswordFileInfo } from '../api/passwordApi';
+import { fetchPasswordFiles } from '../utils/passwordApi';
+import type { PasswordFileInfo } from '../utils/passwordApi';
 import { Button } from '@/components/animate-ui/components/buttons/button';
 import { pickLocalFile, saveFileHandle, addLocalFile, getLocalFilesList, isFileSystemAccessSupported, validateAllLocalFiles, removeLocalFile, removeFileHandle } from '../utils/localFiles';
 import { useOnlineStatus } from '../hooks/use-online-status';
+import { BACKEND_API_URL } from '@/utils/constants';
 
 interface PasswordFilePickerProps {
     onFileSelect: (filename: string) => void;
@@ -138,8 +139,7 @@ export default function PasswordFilePicker({ onFileSelect, onCreateNew, onLockAp
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-            const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3010/api';
-            const response = await fetch(`${API_BASE_URL}/health`, {
+            const response = await fetch(`${BACKEND_API_URL}/health`, {
                 method: 'HEAD',
                 signal: controller.signal,
             });
